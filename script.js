@@ -1,7 +1,7 @@
 
 window.onload = function(){
 
-    // Drawing sction-2 canvas
+    // Drawing section-2 canvas
 
     drawSectionTwo();
 
@@ -27,7 +27,7 @@ window.onload = function(){
 
     }
 
-    // Animating scroll icon
+    // Bouncing scroll icon
 
     animateScrollIcon();
 
@@ -36,7 +36,7 @@ window.onload = function(){
         var scrollArrow = document.getElementById('scroller');
 
         setTimeout(function(){
-            scrollArrow.classList.add('show');
+            scrollArrow.classList.remove('hide');
         },2000);
         setTimeout(function(){
             scrollArrow.classList.add('animate');
@@ -44,30 +44,34 @@ window.onload = function(){
 
     }
 
-    // Animating main title on scroll
+    // Animating main copy and scroll icon on scroll
 
-    handleScroll();
+    var mainCopy = document.getElementById('main-copy-wrap'),
+        scrollArrow = document.getElementById('scroller');
 
-    function handleScroll(){
+    window.addEventListener('scroll', function(){
+        var heightLevel1 = document.documentElement.clientHeight * 0.3,
+            heightLevel2 = document.documentElement.clientHeight * 0.1;
 
-        var title = document.getElementById('main-title'),
-            shrinkOn = 200;
-        console.log(title.offsetParent);
 
-        window.addEventListener('scroll', function(){
-            var distanceY = window.pageYOffset || document.documentElement.scrollTop;
-            // console.log(title.clientY);
-            if(distanceY > shrinkOn){
-                if(!(title.classList.contains('fixed'))){
-                    title.classList.add('fixed');
-                }
+        handleScroll(mainCopy, heightLevel1, 'nav');
+        handleScroll(scrollArrow, heightLevel2, 'hide');
+    });
+
+    function handleScroll(el, shrinkOn, classToToggle){
+
+        var distanceY = window.pageYOffset || document.documentElement.scrollTop;
+
+        if(distanceY > shrinkOn){
+            if(!(el.classList.contains(classToToggle))){
+                el.classList.add(classToToggle);
             }
-            else {
-                if(title.classList.contains('fixed')){
-                    title.classList.remove('fixed');
-                }
+        }
+        else {
+            if(el.classList.contains(classToToggle)){
+                el.classList.remove(classToToggle);
             }
-        });
+        }
 
     }
 
