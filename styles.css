@@ -1,0 +1,240 @@
+@font-face {
+    font-family: 'CampusA-Bold';
+    src: url('fonts/CampusA-Bold.eot');
+    src: local('?'),
+    url('fonts/CampusA-Bold.woff') format('woff'),
+    url('fonts/CampusA-Bold.ttf') format('truetype'),
+    url('fonts/CampusA-Bold.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Monitorica-BoldItalic';
+    src: url('fonts/Monitorica-BoldItalic.eot');
+    src: local('?'),
+    url('fonts/Monitorica-BoldItalic.woff') format('woff'),
+    url('fonts/Monitorica-BoldItalic.ttf') format('truetype'),
+    url('fonts/Monitorica-BoldItalic.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SnowstormLight';
+    src: url('fonts/SnowstormLight.eot');
+    src: local('?'),
+    url('fonts/SnowstormLight.woff') format('woff'),
+    url('fonts/SnowstormLight.ttf') format('truetype'),
+    url('fonts/SnowstormLight.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SnowstormKraft';
+    src: url('fonts/SnowstormKraft.eot');
+    src: local('?'),
+    url('fonts/SnowstormKraft.woff') format('woff'),
+    url('fonts/SnowstormKraft.ttf') format('truetype'),
+    url('fonts/SnowstormKraft.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SnowstormInline';
+    src: url('fonts/SnowstormInline.eot');
+    src: local('?'),
+    url('fonts/SnowstormInline.woff') format('woff'),
+    url('fonts/SnowstormInline.ttf') format('truetype'),
+    url('fonts/SnowstormInline.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    background: url("images/bg2.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+body {
+    margin: 0;
+}
+
+/* Section 1 */
+.section {
+    position: relative;
+    width: 100%;
+}
+.section-1 {
+    height: 95vh;
+}
+#main-copy-wrap {
+    position: absolute;
+    height: 200px;
+    width: 100%;
+    left: 0;
+    top: calc(50% - 100px);
+    background: rgba(0,0,0,.5);
+}
+#main-copy {
+    position: absolute;
+    width: 610px;
+    height: 100%;
+    left: 100px;
+    color: #ffe66d;
+}
+#main-copy span {
+    color: #ff6b6b;
+}
+#main-title {
+    width: 100%;
+    height: auto;
+    font-family: 'CampusA-Bold';
+    font-size: 50px;
+    margin: 40px 0 0 0;
+    transition: all .3s;
+}
+#main-title.fixed {
+    position: fixed;
+    font-size: 30px;
+    top: 15px;
+    z-index: 2;
+}
+#main-subtitle {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    font-family: 'SnowstormLight';
+    font-size: 17px;
+    margin: 26px 0 0 0;
+}
+#scroller {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    bottom: 80px;
+    left: calc(50% - 30px);
+    background: url("images/scroller5.png") no-repeat;
+    background-size: cover;
+    opacity: 0;
+    transition: all .6s;
+}
+#scroller.show {
+    opacity: .5;
+}
+#scroller.animate {
+    animation: scroller 1.5s infinite;
+}
+@keyframes scroller {
+    0% {bottom: 80px;}
+    10% {bottom: 70px;}
+    50% {bottom: 80px;}
+
+}
+
+/* Section 2 */
+.section-2 {
+    width: 100%;
+    height: 5vh;
+    min-height: 20px;
+    background: #ffe66d;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+#diagonal-stripes {
+    position: absolute;
+}
+.canvas-wrap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Section 3 */
+.section-3 {
+    height: 100vh;
+    min-height: 654px;
+    background: url("images/bg3.jpg") no-repeat center center fixed;
+}
+#menu-cards {
+    position: absolute;
+    width: 900px;
+    height: auto;
+    left: calc(50% - 425px);
+    top: calc(50% - 230px - 50px);
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+.card {
+    display:inline-block;
+    width: 150px;
+    height: 230px;
+    color: white;
+    font-size: 12pt;
+    margin-right: 50px;
+    margin-top: 50px;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4), 0 6px 30px 0 rgba(0,0,0,0.4);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all .2s;
+}
+.card div {
+    width: 100%;
+    text-align: center;
+}
+.card-1 .icon {
+    background: url("images/television.png") no-repeat 50% 50%;
+    background-size: 50%;
+}
+.card-2 .icon {
+    background: url("images/washing-machine.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+.card-3 .icon {
+    background: url("images/kettle.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+.card-4 .icon {
+    background: url("images/vacuum-cleaner.png") no-repeat 50% 50%;
+    background-size: 50%;
+}
+.card-5 .icon {
+    background: url("images/air-conditioning.png") no-repeat 50% 50%;
+    background-size: 50%;
+}
+.card-6 .icon {
+    background: url("images/bedroom.png") no-repeat 50% 50%;
+    background-size: 45%;
+}
+.card-7 .icon {
+    background: url("images/chandelier.png") no-repeat 50% 50%;
+    background-size: 40%;
+}
+.card .icon {
+    height: 45%;
+    background-color: rgba(0,0,0,.5);
+    transition: all .2s;
+}
+.card .header {
+    height: 10%;
+    background-color: rgba(0,0,0,.5);
+    color: #ffe66d;
+    transition: all .2s;
+    font-family: 'SnowstormKraft';
+}
+.card .description {
+    height: 45%;
+    background-color: rgba(255,230,109,1);
+    font-family: 'SnowstormLight';
+    color: #000;
+    border-top: 1px solid #ffe66d;
+    padding: 7px;
+    box-sizing: border-box;
+    transition: all .2s;
+}
+.card:hover .description {
+    background-color: #000;
+    color: #ffe66d;
+}
