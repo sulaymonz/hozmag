@@ -1,4 +1,14 @@
 @font-face {
+    font-family: 'Italiano-Medium';
+    src: url('fonts/Italiano-Medium.eot');
+    src: local('?'),
+    url('fonts/Italiano-Medium.woff') format('woff'),
+    url('fonts/Italiano-Medium.ttf') format('truetype'),
+    url('fonts/Italiano-Medium.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
     font-family: 'CampusA-Bold';
     src: url('fonts/CampusA-Bold.eot');
     src: local('?'),
@@ -9,12 +19,12 @@
     font-style: normal;
 }
 @font-face {
-    font-family: 'Monitorica-BoldItalic';
-    src: url('fonts/Monitorica-BoldItalic.eot');
+    font-family: 'FinitionPERSONALUSEONLY';
+    src: url('fonts/FinitionPERSONALUSEONLY.eot');
     src: local('?'),
-    url('fonts/Monitorica-BoldItalic.woff') format('woff'),
-    url('fonts/Monitorica-BoldItalic.ttf') format('truetype'),
-    url('fonts/Monitorica-BoldItalic.svg') format('svg');
+    url('fonts/FinitionPERSONALUSEONLY.woff') format('woff'),
+    url('fonts/FinitionPERSONALUSEONLY.ttf') format('truetype'),
+    url('fonts/FinitionPERSONALUSEONLY.svg') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -76,10 +86,9 @@ body {
     top: calc(47.5% - 100px);
     background: rgba(0,0,0,.8);
     z-index: 2;
-    transition: all .3s;
+    transition: height .3s;
 }
 #main-copy-wrap.nav {
-    top: 0;
     height: 90px;
 }
 #main-copy {
@@ -95,7 +104,7 @@ body {
 #main-title {
     width: 100%;
     height: auto;
-    font-family: 'CampusA-Bold';
+    font-family: 'FinitionPERSONALUSEONLY';
     font-size: 50px;
     margin: 40px 0 0 0;
     transition: all .3s;
@@ -126,7 +135,7 @@ body {
     background: url("images/scroller5.png") no-repeat;
     background-size: cover;
     opacity: .8;
-    transition: all .3s;
+    transition: all .6s;
 }
 #scroller.hide {
     opacity: 0;
