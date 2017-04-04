@@ -1,4 +1,3 @@
-
 window.onload = function(){
 
     // Drawing section-2 canvas
@@ -47,33 +46,42 @@ window.onload = function(){
     // Animating main copy and scroll icon on scroll
 
     var mainCopy = document.getElementById('main-copy-wrap'),
-        scrollArrow = document.getElementById('scroller');
+        scrollArrow = document.getElementById('scroller'),
+        windowHeight = document.documentElement.clientHeight,
+        heightLevel1 = windowHeight * 0.95 - 200;
 
-    window.addEventListener('scroll', function(){
-        var heightLevel1 = document.documentElement.clientHeight * 0.3,
-            heightLevel2 = document.documentElement.clientHeight * 0.1;
-
-
-        handleScroll(mainCopy, heightLevel1, 'nav');
-        handleScroll(scrollArrow, heightLevel2, 'hide');
-    });
+    handleScroll(scrollArrow, 170, 'hide');
+    handleScroll(mainCopy, heightLevel1, 'nav');
 
     function handleScroll(el, shrinkOn, classToToggle){
 
-        var distanceY = window.pageYOffset || document.documentElement.scrollTop;
-
-        if(distanceY > shrinkOn){
-            if(!(el.classList.contains(classToToggle))){
-                el.classList.add(classToToggle);
+        window.addEventListener('scroll', function(){
+            var distanceY = window.pageYOffset || document.documentElement.scrollTop;
+            if(distanceY > shrinkOn){
+                if(!(el.classList.contains(classToToggle))){
+                    el.classList.add(classToToggle);
+                }
             }
-        }
-        else {
-            if(el.classList.contains(classToToggle)){
-                el.classList.remove(classToToggle);
+            else {
+                if(el.classList.contains(classToToggle)){
+                    el.classList.remove(classToToggle);
+                }
             }
-        }
+        });
 
     }
 
+    window.addEventListener('scroll', function(){
+
+        var distanceY = window.pageYOffset || document.documentElement.scrollTop,
+            top = Math.max(0 ,windowHeight * 0.475 - 100 - distanceY);
+
+        mainCopy.style.top = top + 'px';
+
+    });
+
 }
 
+window.onbeforeunload = function () {
+    window.scrollTo(0, 0);  // document scrolls to top on refresh
+}
