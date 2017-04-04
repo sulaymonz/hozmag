@@ -69,12 +69,18 @@ body {
     height: 95vh;
 }
 #main-copy-wrap {
-    position: absolute;
+    position: fixed;
     height: 200px;
     width: 100%;
     left: 0;
-    top: calc(50% - 100px);
+    top: calc(47.5% - 100px);
     background: rgba(0,0,0,.5);
+    z-index: 2;
+    transition: all .3s;
+}
+#main-copy-wrap.nav {
+    top: 0;
+    height: 90px;
 }
 #main-copy {
     position: absolute;
@@ -94,11 +100,10 @@ body {
     margin: 40px 0 0 0;
     transition: all .3s;
 }
-#main-title.fixed {
-    position: fixed;
+.nav #main-title {
     font-size: 30px;
     top: 15px;
-    z-index: 2;
+    margin-top: 30px;
 }
 #main-subtitle {
     position: absolute;
@@ -108,6 +113,10 @@ body {
     font-size: 17px;
     margin: 26px 0 0 0;
 }
+.nav #main-subtitle {
+    opacity: 0;
+    transition: all .3s;
+}
 #scroller {
     position: absolute;
     width: 60px;
@@ -116,11 +125,11 @@ body {
     left: calc(50% - 30px);
     background: url("images/scroller5.png") no-repeat;
     background-size: cover;
-    opacity: 0;
-    transition: all .6s;
-}
-#scroller.show {
     opacity: .5;
+    transition: all .3s;
+}
+#scroller.hide {
+    opacity: 0;
 }
 #scroller.animate {
     animation: scroller 1.5s infinite;

@@ -27,7 +27,7 @@ window.onload = function(){
 
     }
 
-    // Animating scroll icon
+    // Bouncing scroll icon
 
     animateScrollIcon();
 
@@ -36,7 +36,7 @@ window.onload = function(){
         var scrollArrow = document.getElementById('scroller');
 
         setTimeout(function(){
-            scrollArrow.classList.add('show');
+            scrollArrow.classList.remove('hide');
         },2000);
         setTimeout(function(){
             scrollArrow.classList.add('animate');
@@ -44,27 +44,26 @@ window.onload = function(){
 
     }
 
-    // Animating main title on scroll
+    // Animating main copy and scroll icon on scroll
 
-    handleScroll();
-
-    function handleScroll(){
-
-        var title = document.getElementById('main-title'),
-            shrinkOn = 200;
-        console.log(title.offsetParent);
-
+    var mainCopy = document.getElementById('main-copy-wrap'),
+        scrollArrow = document.getElementById('scroller');
+    
+    handleScroll(mainCopy, 100, 'nav');
+    handleScroll(scrollArrow, 170, 'hide');
+    
+    function handleScroll(el, shrinkOn, classToToggle){
+        
         window.addEventListener('scroll', function(){
             var distanceY = window.pageYOffset || document.documentElement.scrollTop;
-            // console.log(title.clientY);
             if(distanceY > shrinkOn){
-                if(!(title.classList.contains('fixed'))){
-                    title.classList.add('fixed');
+                if(!(el.classList.contains(classToToggle))){
+                    el.classList.add(classToToggle);
                 }
             }
             else {
-                if(title.classList.contains('fixed')){
-                    title.classList.remove('fixed');
+                if(el.classList.contains(classToToggle)){
+                    el.classList.remove(classToToggle);
                 }
             }
         });
