@@ -74,7 +74,7 @@ body {
     width: 100%;
     left: 0;
     top: calc(47.5% - 100px);
-    background: rgba(0,0,0,.5);
+    background: rgba(0,0,0,.8);
     z-index: 2;
     transition: all .3s;
 }
@@ -125,7 +125,7 @@ body {
     left: calc(50% - 30px);
     background: url("images/scroller5.png") no-repeat;
     background-size: cover;
-    opacity: .5;
+    opacity: .8;
     transition: all .3s;
 }
 #scroller.hide {
@@ -164,6 +164,7 @@ body {
     height: 100vh;
     min-height: 654px;
     background: url("images/bg3.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
 #menu-cards {
     position: absolute;
@@ -223,12 +224,12 @@ body {
 }
 .card .icon {
     height: 45%;
-    background-color: rgba(0,0,0,.5);
+    background-color: rgba(0,0,0,.8);
     transition: all .2s;
 }
 .card .header {
     height: 10%;
-    background-color: rgba(0,0,0,.5);
+    background-color: rgba(0,0,0,.8);
     color: #ffe66d;
     transition: all .2s;
     font-family: 'SnowstormKraft';
@@ -244,6 +245,6 @@ body {
     transition: all .2s;
 }
 .card:hover .description {
-    background-color: #000;
+    background-color: rgba(0,0,0,.8);
     color: #ffe66d;
 }

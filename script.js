@@ -1,7 +1,7 @@
 
 window.onload = function(){
 
-    // Drawing sction-2 canvas
+    // Drawing section-2 canvas
 
     drawSectionTwo();
 
@@ -48,25 +48,30 @@ window.onload = function(){
 
     var mainCopy = document.getElementById('main-copy-wrap'),
         scrollArrow = document.getElementById('scroller');
-    
-    handleScroll(mainCopy, 100, 'nav');
-    handleScroll(scrollArrow, 170, 'hide');
-    
+
+    window.addEventListener('scroll', function(){
+        var heightLevel1 = document.documentElement.clientHeight * 0.3,
+            heightLevel2 = document.documentElement.clientHeight * 0.1;
+
+
+        handleScroll(mainCopy, heightLevel1, 'nav');
+        handleScroll(scrollArrow, heightLevel2, 'hide');
+    });
+
     function handleScroll(el, shrinkOn, classToToggle){
-        
-        window.addEventListener('scroll', function(){
-            var distanceY = window.pageYOffset || document.documentElement.scrollTop;
-            if(distanceY > shrinkOn){
-                if(!(el.classList.contains(classToToggle))){
-                    el.classList.add(classToToggle);
-                }
+
+        var distanceY = window.pageYOffset || document.documentElement.scrollTop;
+
+        if(distanceY > shrinkOn){
+            if(!(el.classList.contains(classToToggle))){
+                el.classList.add(classToToggle);
             }
-            else {
-                if(el.classList.contains(classToToggle)){
-                    el.classList.remove(classToToggle);
-                }
+        }
+        else {
+            if(el.classList.contains(classToToggle)){
+                el.classList.remove(classToToggle);
             }
-        });
+        }
 
     }
 
