@@ -1,10 +1,10 @@
 @font-face {
-    font-family: 'Italiano-Medium';
-    src: url('fonts/Italiano-Medium.eot');
+    font-family: 'PTSerif-Regular';
+    src: url('fonts/PTSerif-Regular.eot');
     src: local('?'),
-    url('fonts/Italiano-Medium.woff') format('woff'),
-    url('fonts/Italiano-Medium.ttf') format('truetype'),
-    url('fonts/Italiano-Medium.svg') format('svg');
+    url('fonts/PTSerif-Regular.woff') format('woff'),
+    url('fonts/PTSerif-Regular.ttf') format('truetype'),
+    url('fonts/PTSerif-Regular.svg') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -85,11 +85,13 @@ body {
     left: 0;
     top: calc(47.5% - 100px);
     background: rgba(0,0,0,.8);
+    border-bottom: 1px solid transparent;
     z-index: 2;
     transition: height .3s;
 }
 #main-copy-wrap.nav {
     height: 90px;
+    border-color: #ffe66d;
 }
 #main-copy {
     position: absolute;
@@ -112,7 +114,7 @@ body {
 .nav #main-title {
     font-size: 30px;
     top: 15px;
-    margin-top: 30px;
+    margin-top: 25px;
 }
 #main-subtitle {
     position: absolute;
