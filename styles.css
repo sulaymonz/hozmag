@@ -1,10 +1,10 @@
 @font-face {
-    font-family: 'Italiano-Medium';
-    src: url('fonts/Italiano-Medium.eot');
+    font-family: 'PTSerif-Regular';
+    src: url('fonts/PTSerif-Regular.eot');
     src: local('?'),
-    url('fonts/Italiano-Medium.woff') format('woff'),
-    url('fonts/Italiano-Medium.ttf') format('truetype'),
-    url('fonts/Italiano-Medium.svg') format('svg');
+    url('fonts/PTSerif-Regular.woff') format('woff'),
+    url('fonts/PTSerif-Regular.ttf') format('truetype'),
+    url('fonts/PTSerif-Regular.svg') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -69,6 +69,9 @@ html {
 body {
     margin: 0;
 }
+body.noscroll {
+    overflow: hidden;
+}
 
 /* Section 1 */
 .section {
@@ -85,11 +88,14 @@ body {
     left: 0;
     top: calc(47.5% - 100px);
     background: rgba(0,0,0,.8);
-    z-index: 2;
+    border-bottom: 1px solid transparent;
+    z-index: 3;
     transition: height .3s;
 }
 #main-copy-wrap.nav {
+    top: 0 !important;
     height: 90px;
+    border-color: #ffe66d;
 }
 #main-copy {
     position: absolute;
@@ -112,7 +118,7 @@ body {
 .nav #main-title {
     font-size: 30px;
     top: 15px;
-    margin-top: 30px;
+    margin-top: 25px;
 }
 #main-subtitle {
     position: absolute;
@@ -120,7 +126,7 @@ body {
     height: auto;
     font-family: 'SnowstormLight';
     font-size: 17px;
-    margin: 26px 0 0 0;
+    margin: 0;
 }
 .nav #main-subtitle {
     opacity: 0;
@@ -193,6 +199,7 @@ body {
     font-size: 12pt;
     margin-right: 50px;
     margin-top: 50px;
+    border: 1px solid #ffe66d;
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4), 0 6px 30px 0 rgba(0,0,0,0.4);
     overflow: hidden;
@@ -256,4 +263,41 @@ body {
 .card:hover .description {
     background-color: rgba(0,0,0,.8);
     color: #ffe66d;
+}
+
+/*Fences*/
+#fences-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 2;
+}
+#fences-wrapper.block {
+    display: block;
+}
+#fences-wrapper canvas {
+    position: absolute;
+}
+#close-card {
+    position: absolute;
+    width: 150px;
+    height: 30px;
+    top: calc(50vh - 15px);
+    left: calc(50% - 75px);
+    border: 1px solid #ffe66d;
+    border-radius: 5px;
+    background: rgba(0,0,0,.8);
+    font-family: 'SnowstormLight';
+    font-size: 12pt;
+    color: #ffe66d;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+    transitio: all .2s;
+}
+#close-card:hover {
+    background: rgba(0,0,0,.2);
 }
