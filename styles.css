@@ -126,7 +126,7 @@ body.noscroll {
     height: auto;
     font-family: 'SnowstormLight';
     font-size: 17px;
-    margin: 26px 0 0 0;
+    margin: 0;
 }
 .nav #main-subtitle {
     opacity: 0;
