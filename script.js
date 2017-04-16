@@ -250,7 +250,7 @@ window.onload = function(){
             ctx.clearRect(0, 0, 200, 200);
 
             ctx.strokeStyle = '#ff6b6b';
-            ctx.lineWidth = 1.5;
+            // ctx.lineWidth = 1.5;
             ctx.save();
             ctx.translate(100, 100);
 
