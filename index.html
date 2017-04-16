@@ -14,6 +14,15 @@
 			<p id="main-subtitle">Хочешь купить бытовую технику, мебель, но живешь у черта на куличках - в Шаартузе?<br>
 				Не огорчайся, закажи это в <span>Magazini Hamza</span> и дело в шляпе.
 			</p>
+			<div id="tabs">
+				<div class="tab tab-0">Видеотехника</div>
+				<div class="tab tab-1">Крупнобытовая</div>
+				<div class="tab tab-2">Кухонная</div>
+				<div class="tab tab-3">Бытовая</div>
+				<div class="tab tab-4">Климатическая</div>
+				<div class="tab tab-5">Мебель</div>
+				<div class="tab tab-6">Другие</div>
+			</div>
 		</div>
 	</div>
 	<div id="scroller" class="hide"></div>
@@ -24,62 +33,170 @@
 	</div>
 </div>
 <div class="section section-3">
-	<ul id="menu-cards">
+	<ul id="category-cards">
+		<li class="card card-0">
+			<div class="icon"></div>
+			<div class="header">Видеотехника</div>
+			<div class="description">
+				телевизоры,<br> DVD-плееры и другая видео техника
+			</div>
+		</li>
 		<li class="card card-1">
 			<div class="icon"></div>
-			<div class="header">Видео техника</div>
+			<div class="header">Крупнобытовая</div>
 			<div class="description">
-				Телевизоры,<br> DVD-плееры и другая видео техника
+				холодильники, газовые и электрические плиты и др.
 			</div>
 		</li>
 		<li class="card card-2">
 			<div class="icon"></div>
-			<div class="header">Крупнобытовая</div>
+			<div class="header">Кухонная техника</div>
 			<div class="description">
-				Холодильники, газовые и электрические плиты и др.
+				электрочайники, микроволновые печи, мясорубки и остальное для кухни
 			</div>
 		</li>
 		<li class="card card-3">
 			<div class="icon"></div>
-			<div class="header">Кухонная техника</div>
+			<div class="header">Бытовая техника</div>
 			<div class="description">
-				Электрочайники, микроволновые печи, мясорубки и остальное для кухни
+				пылесосы,<br> утюги и другое в этом роде
 			</div>
 		</li>
 		<li class="card card-4">
 			<div class="icon"></div>
-			<div class="header">Бытовая техника</div>
+			<div class="header">Климатическая</div>
 			<div class="description">
-				Пылесосы,<br> утюги и другое в этом роде
+				кондиционеры, обогреватели и всё, что греет или наоборот
 			</div>
 		</li>
 		<li class="card card-5">
 			<div class="icon"></div>
-			<div class="header">Климатическая</div>
+			<div class="header">Мебель</div>
 			<div class="description">
-				Кондиционеры, обогреватели и всё, что греет или наоборот
+				мебель есть<br> мебель
 			</div>
 		</li>
 		<li class="card card-6">
 			<div class="icon"></div>
-			<div class="header">Мебель</div>
-			<div class="description">
-				Мебель есть<br> мебель
-			</div>
-		</li>
-		<li class="card card-7">
-			<div class="icon"></div>
 			<div class="header">Другие</div>
 			<div class="description">
-				Люстры, топливные генераторы, майда-чуйда и всё такое
+				люстры, топливные генераторы, майда-чуйда и всё такое
 			</div>
 		</li>
 	</ul>
 </div>
-<div id="fences-wrapper">
-	<canvas id="left-fences" width="150px" height="150px"></canvas>
-	<canvas id="right-fences" width="150px" height="150px"></canvas>
-	<div id="close-card">Закрыть</div>
+
+<!--Hidden stack of categories that will be copied to dynamically generated DOM-->
+<div id="categories">
+	<div class="category category-0">
+		<div class="title">Видеотехника</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Телевизоры</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">DVD-плееры</div>
+		</div>
+	</div>
+	<div class="category category-1">
+		<div class="title">Крупнобытовая техника</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Электрочайники</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">Микроволновые<br> печи</div>
+		</div>
+		<div class="subcard subcard-2">
+			<div class="icon"></div>
+			<div class="header">Мясорубки</div>
+		</div>
+		<div class="subcard subcard-3">
+			<div class="icon"></div>
+			<div class="header">Кухонная<br> посуда</div>
+		</div>
+	</div>
+	<div class="category category-2">
+		<div class="title">Кухонная техника</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Холодильники</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">Газовые/электрические<br> плиты</div>
+		</div>
+		<div class="subcard subcard-2">
+			<div class="icon"></div>
+			<div class="header">Стиральные<br> машины</div>
+		</div>
+		<div class="subcard subcard-3">
+			<div class="icon"></div>
+			<div class="header">Вытяжки</div>
+		</div>
+	</div>
+	<div class="category category-3">
+		<div class="title">Бытовая техника</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Пылесосы</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">Утюги</div>
+		</div>
+		<div class="subcard subcard-2">
+			<div class="icon"></div>
+			<div class="header">Гладильные<br> доски</div>
+		</div>
+	</div>
+	<div class="category category-4">
+		<div class="title">Климатическая техника</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Вентиляторы</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">Кондиционеры</div>
+		</div>
+		<div class="subcard subcard-2">
+			<div class="icon"></div>
+			<div class="header">Водонагреватели</div>
+		</div>
+		<div class="subcard subcard-3">
+			<div class="icon"></div>
+			<div class="header">Обогреватели</div>
+		</div>
+	</div>
+	<div class="category category-5">
+		<div class="title">Мебель</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Кухни</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">Спальня</div>
+		</div>
+	</div>
+	<div class="category category-6">
+		<div class="title">Другие</div>
+		<div class="subcard subcard-0">
+			<div class="icon"></div>
+			<div class="header">Топливные генераторы</div>
+		</div>
+		<div class="subcard subcard-1">
+			<div class="icon"></div>
+			<div class="header">Люстры</div>
+		</div>
+		<div class="subcard subcard-2">
+			<div class="icon"></div>
+			<div class="header">Тёплые полы</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>
