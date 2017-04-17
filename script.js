@@ -234,8 +234,10 @@ window.onload = function(){
 
     function handleSubcardHover(idx){
         var canvasAngle = 0,
-            lEven = 10,   // canvas even line length
-            dlEven = 1;  // change in even-line length in each animation frame
+            lEven = 10,  // initial length of even playing lines
+            dlEven = 1,  // change in even-line length in each animation frame
+            lOdd = 2,
+            dlOdd = -1;
 
         if(!subcardCanvas) subcardCanvas = document.createElement('canvas');
         subcards[idx].appendChild(subcardCanvas);
@@ -257,24 +259,41 @@ window.onload = function(){
             ctx.rotate((Math.PI / 180) * canvasAngle);
             ctx.beginPath();
 
-            for(var i=0; i<36; i++){
-                // even lines
+            for(var i=0; i<18; i++){
+                // even playing lines
                 ctx.moveTo(0, -96);
                 ctx.lineTo(0, -96 + lEven); // changing length
-                ctx.rotate((Math.PI / 180) * 5);
-                // odd lines
+                ctx.rotate((Math.PI / 180) * 10);
+
+                // odd playing lines
                 ctx.moveTo(0, -96);
-                ctx.lineTo(0, -93); // fixed length
-                ctx.rotate((Math.PI / 180) * 5);
+                ctx.lineTo(0, -96 + lOdd); // changing length
+                ctx.rotate((Math.PI / 180) * 10);
             }
             ctx.stroke();
-            ctx.restore();
 
-            canvasAngle += 0.3;
+            ctx.rotate((Math.PI / 180) * 5);
+            ctx.strokeStyle = '#000';
+            ctx.beginPath();
+
+            // fixed lines
+            for(var i=0; i<36; i++){
+                ctx.moveTo(0, -96);
+                ctx.lineTo(0, -94); // fixed length
+                ctx.rotate((Math.PI / 180) * 10);
+            }
+            ctx.stroke();
+
+            ctx.restore();
+            canvasAngle += 0.12;
 
             if(lEven >= 10) dlEven = -1;
             else if(lEven <= 2) dlEven = 1;
-            lEven = lEven + dlEven/4;
+            lEven = lEven + dlEven/4; // bigger denominator, slower length change animation
+
+            if(lOdd >= 10) dlOdd = -1;
+             else if(lOdd <= 2) dlOdd = 1;
+             lOdd = lOdd + dlOdd/4;
 
             if(subcardHover) window.requestAnimationFrame(animateSubcard);
             else {
