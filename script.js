@@ -104,7 +104,7 @@ window.onload = function(){
 
         categoryFrame.classList.add('block');
         mainCopy.classList.add('nav');            // fixing the nav-bar to top for cases when it's not already there
-        tabs.className = 'block show',
+        tabs.className = 'block show';
         document.body.classList.add('noscroll');  // disable body scroll to prevent nav-bar moving
 
         ctx1 = leftFences.getContext('2d');
@@ -201,21 +201,14 @@ window.onload = function(){
         if (mask1X > -step && mask2W < screenWidth + step){
             window.requestAnimationFrame(moveOutFences);
         }
-        else {
-            removeFrame();
-            categoryFrameOpened = false;
-        }
+        else removeFrame();
+
     }
 
     function removeFrame(){
         categoryFrame.classList.remove('block');
-        tabs.classList.remove('show');
-
-        setTimeout(function(){
-            tabs.classList.remove('block');
-        }, 500);
-
         categoriesStack.appendChild(category);
+        document.body.removeChild(categoryFrame);
         document.body.classList.remove('noscroll');  // enable body scroll
 
         // reset the masks for the next animation
@@ -225,6 +218,13 @@ window.onload = function(){
 
     function closeCategoryFrame(){
         category.classList.add('hidden');
+        categoryFrameOpened = false;
+
+        tabs.classList.remove('show');
+        setTimeout(function(){
+            tabs.classList.remove('block');
+        }, 220);
+
         setTimeout(function(){
             window.requestAnimationFrame(moveOutFences);
         }, 50);
