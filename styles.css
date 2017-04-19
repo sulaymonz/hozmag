@@ -120,6 +120,8 @@ body.noscroll {
     top: 15px;
     margin-top: 25px;
     margin-left: -14px;
+    width: 200px;
+    cursor: pointer;
 }
 #main-subtitle {
     position: absolute;
@@ -312,26 +314,6 @@ body.noscroll {
 .category-frame canvas {
     position: absolute;
 }
-.close-card {
-    position: absolute;
-    width: 150px;
-    height: 30px;
-    bottom: 100px;
-    left: calc(50% - 75px);
-    border: 1px solid #ffe66d;
-    border-radius: 5px;
-    background: rgba(0,0,0,.8);
-    font-family: 'SnowstormLight';
-    font-size: 12pt;
-    color: #ffe66d;
-    text-align: center;
-    line-height: 30px;
-    cursor: pointer;
-    transition: all .2s;
-}
-.close-card:hover {
-    background: rgba(0,0,0,1);
-}
 
 /* Categories */
 #categories {
@@ -349,6 +331,7 @@ body.noscroll {
     padding: 0;
     font-family: 'SnowstormLight';
     animation: fadeIn .4s;
+    transition: all .4s;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -360,6 +343,9 @@ body.noscroll {
 }
 .category.block {
     display: block;
+}
+.category.hidden {
+    opacity: 0;
 }
 .category .title {
     position: absolute;

@@ -4,7 +4,7 @@ window.onbeforeunload = function () {
 
 window.onload = function(){
 
-    // globals
+    // GLOBALS
     var mainCopy = document.getElementById('main-copy-wrap'),
         tabs = document.getElementById('tabs'),
         cards = document.querySelectorAll('.card'),
@@ -12,17 +12,17 @@ window.onload = function(){
         screenWidth = window.screen.width,
         screenHeight = window.screen.height,
         canvasLength = Math.max(screenWidth, screenHeight),
+        categoryFrameOpened = false,
         categoryFrame,
         category,
         leftFences,
         rightFences,
-        closeButton,
         ctx1,
         ctx2,
         mask1X,
         mask2W;
 
-    // Drawing section-2 canvas
+    // DRAWING SECTION-2 CANVAS
 
     drawSectionTwo();
 
@@ -43,7 +43,7 @@ window.onload = function(){
         }
     }
 
-    // Bouncing scroll icon
+    // BOUNCING SCROLL ICON
 
     animateScrollIcon();
 
@@ -58,7 +58,7 @@ window.onload = function(){
         },2500);
     }
 
-    // Animating main copy and scroll icon on scroll
+    // ANIMATING MAIN COPY AND SCROLL ICON ON SCROLL
 
     var scrollArrow = document.getElementById('scroller'),
         windowHeight = document.documentElement.clientHeight,
@@ -89,7 +89,7 @@ window.onload = function(){
         mainCopy.style.top = top + 'px';
     });
 
-    // Handling the card click (fences in)
+    // HANDLING THE CARD CLICK (FENCES IN)
 
     for (var i=0; i<cards.length; i++){
         (function(idx){
@@ -119,29 +119,28 @@ window.onload = function(){
         categoryFrame = document.createElement('div');
         leftFences = document.createElement('canvas');
         rightFences = document.createElement('canvas');
-        closeButton = document.createElement('div');
         category = document.querySelector('#categories .category-' + categoryIdx);
 
         categoryFrame.classList.add('category-frame');
         leftFences.classList.add('left-fences');
         rightFences.classList.add('right-fences');
-        closeButton.classList.add('close-card');
-
-        closeButton.innerHTML = 'закрыть';
-
-        closeButton.addEventListener('click', closeCard);
 
         categoryFrame.appendChild(leftFences);
         categoryFrame.appendChild(rightFences);
-        categoryFrame.appendChild(closeButton);
         categoryFrame.appendChild(category);
 
         category.classList.add('block');
+        category.classList.remove('hidden');
 
         document.body.appendChild(categoryFrame);
     }
 
-    function moveInFences(){
+    var ctx,
+        stripeStep = 225,
+        stripeHeight = 85,
+        step = 75; // bigger value, faster animation
+
+    function drawFences(){
         leftFences.width = screenWidth;
         leftFences.height = screenHeight;
         rightFences.width = screenWidth;
@@ -150,11 +149,6 @@ window.onload = function(){
         ctx1.fillStyle = '#000';
         ctx2.fillStyle = '#ffe66d';
 
-        var ctx = ctx1,
-            stripeStep = 225,
-            stripeHeight = 85,
-            step = 75; // bigger value, faster animation
-
         ctx1.save();
         ctx1.rotate((Math.PI / 180) * 33.5);
         ctx1.translate(canvasLength/2, canvasLength/2);
@@ -162,6 +156,8 @@ window.onload = function(){
         ctx2.save();
         ctx2.rotate((Math.PI / 180) * 33.5);
         ctx2.translate(canvasLength/2, canvasLength/2);
+
+        ctx = ctx1;
 
         for (var i=-2*canvasLength; i<2*canvasLength; i+=stripeStep){
             // drawing left and right fences in different canvases
@@ -182,18 +178,36 @@ window.onload = function(){
         ctx2.restore();
         ctx1.clearRect(mask1X, 0, screenWidth - mask1X, screenHeight);
         ctx2.clearRect(0, 0 , mask2W, screenHeight);
+    }
 
+    function moveInFences(){
+        drawFences();
         // reducing masks' width, so the fences are seen more by each frame
         mask1X += step;
         mask2W -= step;
-
         // repeat till masks leave the screen
         if (mask1X < screenWidth + step && mask2W > -step){
             window.requestAnimationFrame(moveInFences);
         }
+        else categoryFrameOpened = true;
     }
 
-    function closeCard(){
+    function moveOutFences(){
+        drawFences();
+        // expanding masks, so the fences are hidden more by each frame
+        mask1X -= step;
+        mask2W += step;
+        // repeat till masks cover all the screen
+        if (mask1X > -step && mask2W < screenWidth + step){
+            window.requestAnimationFrame(moveOutFences);
+        }
+        else {
+            removeFrame();
+            categoryFrameOpened = false;
+        }
+    }
+
+    function removeFrame(){
         categoryFrame.classList.remove('block');
         tabs.classList.remove('show');
 
@@ -209,7 +223,24 @@ window.onload = function(){
         mask2W = screenWidth;
     }
 
-    // Subcard mouseover animation
+    function closeCategoryFrame(){
+        category.classList.add('hidden');
+        setTimeout(function(){
+            window.requestAnimationFrame(moveOutFences);
+        }, 50);
+    }
+
+    // HANDLING LOGO CLICK
+
+    var logo = document.getElementById('main-title');
+
+    logo.addEventListener('click', function(){
+        if(categoryFrameOpened) {
+            closeCategoryFrame();
+        }
+    });
+
+    // SUBCARD HOVER ANIMATION
 
     var subcards = document.querySelectorAll('.subcard'),
         subcardCanvas,
@@ -289,7 +320,7 @@ window.onload = function(){
 
             if(lEven >= 10) dlEven = -1;
             else if(lEven <= 2) dlEven = 1;
-            lEven = lEven + dlEven/4; // bigger denominator, slower length change animation
+            lEven = lEven + dlEven/4; // bigger denominator, slower length-change animation
 
             if(lOdd >= 10) dlOdd = -1;
              else if(lOdd <= 2) dlOdd = 1;
