@@ -27,14 +27,14 @@ window.onload = function(){
     drawSectionTwo();
 
     function drawSectionTwo(){
-        var diagonalStripes = document.getElementById('diagonal-stripes');
+        var diagonalstrips = document.getElementById('diagonal-strips');
 
-        diagonalStripes.width = screenWidth;
-        diagonalStripes.height = screenHeight;
+        diagonalstrips.width = screenWidth;
+        diagonalstrips.height = screenHeight;
 
-        var ctx = diagonalStripes.getContext('2d');
+        var ctx = diagonalstrips.getContext('2d');
 
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = '#333333';
         ctx.rotate((Math.PI / 180) * 33.5);
         ctx.translate(canvasLength/2, canvasLength/2);
 
@@ -91,31 +91,40 @@ window.onload = function(){
 
     // HANDLING THE CARD CLICK (FENCES IN)
 
+    var currentCategoryIdx,
+        ctx,
+        stripStep = 225,
+        stripHeight = 85,
+        stripDelay = 1,         // used for closing very thin gaps between fences that appear in some browsers
+        step = 75,              // bigger value, faster animation
+        colorSets = {
+            set1: ['#ffe66d', '#333333', '#ff6b6b', '#333333'],
+            set2: ['#ff6b6b', '#4ecdc4', '#ff6b6b', '#4ecdc4'],
+            set3: ['#333333', '#ffe66d', '#333333', '#ff6b6b'],
+            set4: ['#4ecdc4', '#ff6b6b', '#4ecdc4', '#ff6b6b']
+        },
+        colorSetIdx = 0,
+        currentColorSet = ['#333333', '#ffe66d', '#ff6b6b'],
+        angleCoefficient = -1;  // horizontally flips the fences. 2 possible values: -1, 1
+
     for (var i=0; i<cards.length; i++){
         (function(idx){
             cards[idx].addEventListener('click', function (){
-                handleCardClick(idx);
+                handleCardClick();
+                newCategoryFrame(idx);
             });
         })(i);
     }
 
-    function handleCardClick(idx){
-        newCategoryFrame(idx);
-
-        categoryFrame.classList.add('block');
+    function handleCardClick(){
         mainCopy.classList.add('nav');            // fixing the nav-bar to top for cases when it's not already there
         tabs.className = 'block show';
         document.body.classList.add('noscroll');  // disable body scroll to prevent nav-bar moving
-
-        ctx1 = leftFences.getContext('2d');
-        ctx2 = rightFences.getContext('2d');
-        mask1X = 0;            // x position of the rectangle that masks the left fences
-        mask2W = screenWidth;  // width of the rectangle that masks the right fences
-
-        window.requestAnimationFrame(moveInFences);
     }
 
     function newCategoryFrame(categoryIdx){
+        currentCategoryIdx = categoryIdx;
+
         categoryFrame = document.createElement('div');
         leftFences = document.createElement('canvas');
         rightFences = document.createElement('canvas');
@@ -133,12 +142,24 @@ window.onload = function(){
         category.classList.remove('hidden');
 
         document.body.appendChild(categoryFrame);
-    }
+        categoryFrame.classList.add('block');
 
-    var ctx,
-        stripeStep = 225,
-        stripeHeight = 85,
-        step = 75; // bigger value, faster animation
+        ctx1 = leftFences.getContext('2d');
+        ctx2 = rightFences.getContext('2d');
+        mask1X = 0;            // x position of the rectangle that masks the left fences
+        mask2W = screenWidth;  // width of the rectangle that masks the right fences
+
+        // switching fence color set
+        colorSetIdx = (colorSetIdx < Object.keys(colorSets).length) ? colorSetIdx + 1 : 1;
+        currentColorSet = colorSets['set' + colorSetIdx];
+        category.style.backgroundColor = currentColorSet[0];
+        // category.style.borderColor = currentColorSet[1];
+        category.querySelector('.title').style.color = currentColorSet[1];
+
+        // angleCoefficient = (angleCoefficient == -1) ? 1 : -1;
+
+        window.requestAnimationFrame(moveInFences);
+    }
 
     function drawFences(){
         leftFences.width = screenWidth;
@@ -146,8 +167,10 @@ window.onload = function(){
         rightFences.width = screenWidth;
         rightFences.height = screenHeight;
 
-        ctx1.fillStyle = '#000';
-        ctx2.fillStyle = '#ffe66d';
+        ctx1.fillStyle = currentColorSet[0];
+        ctx2.fillStyle = currentColorSet[1];
+        ctx2.shadowBlur = 20;
+        ctx2.shadowColor = '#000';
 
         ctx1.save();
         ctx1.rotate((Math.PI / 180) * 33.5);
@@ -159,18 +182,20 @@ window.onload = function(){
 
         ctx = ctx1;
 
-        for (var i=-2*canvasLength; i<2*canvasLength; i+=stripeStep){
+        for (var i=-2*canvasLength; i<2*canvasLength; i+=stripStep){
             // drawing left and right fences in different canvases
-            ctx.fillRect(-canvasLength, i, canvasLength*2, stripeHeight);
+            ctx.fillRect(-canvasLength, i - stripDelay, canvasLength*2, stripHeight + stripDelay*2);
             if (i%2 == 0) {
                 ctx = ctx2;
-                stripeStep = 85;
-                stripeHeight = 225;
+                stripStep = 85;
+                stripHeight = 225;
+                stripDelay = 0;
             }
             else {
                 ctx = ctx1;
-                stripeStep = 225;
-                stripeHeight = 85;
+                stripStep = 225;
+                stripHeight = 85;
+                stripDelay = 1;
             }
         }
 
@@ -189,7 +214,10 @@ window.onload = function(){
         if (mask1X < screenWidth + step && mask2W > -step){
             window.requestAnimationFrame(moveInFences);
         }
-        else categoryFrameOpened = true;
+        else {
+            categoryFrameOpened = true;
+            document.dispatchEvent(buildFrameEvent);
+        }
     }
 
     function moveOutFences(){
@@ -201,19 +229,19 @@ window.onload = function(){
         if (mask1X > -step && mask2W < screenWidth + step){
             window.requestAnimationFrame(moveOutFences);
         }
-        else removeFrame();
+        else {
+            removeFrame(categoryFrame, category);
+            // reset the masks for the next animation
+            mask1X = 0;
+            mask2W = screenWidth;
+        }
 
     }
 
-    function removeFrame(){
-        categoryFrame.classList.remove('block');
+    function removeFrame(frame, category){
+        frame.classList.remove('block');
         categoriesStack.appendChild(category);
-        document.body.removeChild(categoryFrame);
-        document.body.classList.remove('noscroll');  // enable body scroll
-
-        // reset the masks for the next animation
-        mask1X = 0;
-        mask2W = screenWidth;
+        document.body.removeChild(frame);
     }
 
     function closeCategoryFrame(){
@@ -223,12 +251,41 @@ window.onload = function(){
         tabs.classList.remove('show');
         setTimeout(function(){
             tabs.classList.remove('block');
+            document.body.classList.remove('noscroll');  // enable body scroll
         }, 220);
 
         setTimeout(function(){
             window.requestAnimationFrame(moveOutFences);
         }, 50);
     }
+
+    // HANDLING THE TAB CLICK
+
+    var tab = document.querySelectorAll('.tab'),
+        outgoingFrame = null,
+        outgoingCategory = null;
+
+    for(var i=0; i<tab.length; i++){
+        (function(idx){
+            tab[idx].addEventListener('click', function(){
+                if(idx != currentCategoryIdx){
+                    outgoingFrame = categoryFrame;
+                    outgoingCategory = category;
+                    newCategoryFrame(idx);
+                }
+            });
+        })(i);
+    }
+
+    // creating event that triggers when a new frame is built
+    var buildFrameEvent = document.createEvent('Event');
+    buildFrameEvent.initEvent('buildFrameEvent', true, true);
+
+    document.addEventListener('buildFrameEvent', function () {
+        if(outgoingFrame) {
+            removeFrame(outgoingFrame, outgoingCategory);
+        }
+    });
 
     // HANDLING LOGO CLICK
 
@@ -237,6 +294,8 @@ window.onload = function(){
     logo.addEventListener('click', function(){
         if(categoryFrameOpened) {
             closeCategoryFrame();
+            outgoingFrame = null;     // the vars for outgoings should be cleared to prevent the last but one
+            outgoingCategory = null;  // opened category from deleting on the next frame opening
         }
     });
 
@@ -282,8 +341,8 @@ window.onload = function(){
             ctx.globalCompositeOperation = 'destination-over';
             ctx.clearRect(0, 0, 200, 200);
 
-            ctx.strokeStyle = '#ff6b6b';
-            // ctx.lineWidth = 1.5;
+            ctx.strokeStyle = currentColorSet[2];
+            ctx.lineWidth = 1.5;
             ctx.save();
             ctx.translate(100, 100);
 
@@ -304,7 +363,7 @@ window.onload = function(){
             ctx.stroke();
 
             ctx.rotate((Math.PI / 180) * 5);
-            ctx.strokeStyle = '#000';
+            ctx.strokeStyle = currentColorSet[3];
             ctx.beginPath();
 
             // fixed lines
