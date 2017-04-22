@@ -89,6 +89,7 @@ body.noscroll {
     top: calc(47.5% - 100px);
     background: rgba(0,0,0,.6);
     border-bottom: 1px solid transparent;
+    /*box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);*/
     z-index: 3;
     transition: height .3s;
 }
@@ -96,6 +97,7 @@ body.noscroll {
     top: 0 !important;
     height: 90px;
     border-color: #ffe66d;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
 }
 #main-copy {
     position: absolute;
@@ -295,10 +297,10 @@ body.noscroll {
     box-sizing: border-box;
     transition: all .2s;
 }
-.card:hover .description {
+/*.card:hover .description {
     color: #292f36;
     background-color: rgba(255,230,109,1);
-}
+}*/
 
 /*Fences*/
 .category-frame {
@@ -335,7 +337,8 @@ body.noscroll {
     font-family: 'SnowstormLight';
     border: 1px solid transparent;
     border-radius: 5px;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
+    /*box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);*/
     animation: fadeIn .9s;
     transition: all .4s;
     -webkit-user-select: none;
@@ -433,7 +436,7 @@ body.noscroll {
 .subcard canvas {
     top: 0;
     left: 0;
-    opacity: 0;
+    opacity: 1;
     transition: opacity .5s;
 }
 .subcard canvas:hover {

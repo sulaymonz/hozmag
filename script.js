@@ -169,7 +169,7 @@ window.onload = function(){
 
         ctx1.fillStyle = currentColorSet[0];
         ctx2.fillStyle = currentColorSet[1];
-        ctx2.shadowBlur = 20;
+        ctx2.shadowBlur = 5;
         ctx2.shadowColor = '#000';
 
         ctx1.save();
