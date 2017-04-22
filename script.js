@@ -104,8 +104,8 @@ window.onload = function(){
             set4: ['#4ecdc4', '#ff6b6b', '#4ecdc4', '#ff6b6b']
         },
         colorSetIdx = 0,
-        currentColorSet = ['#333333', '#ffe66d', '#ff6b6b'],
-        angleCoefficient = -1;  // horizontally flips the fences. 2 possible values: -1, 1
+        currentColorSet = ['#333333', '#ffe66d', '#ff6b6b'];
+        // angleCoefficient = -1;  // horizontally flips the fences. 2 possible values: -1, 1
 
     for (var i=0; i<cards.length; i++){
         (function(idx){

@@ -95,7 +95,7 @@ body.noscroll {
 }
 #main-copy-wrap.nav {
     top: 0 !important;
-    height: 90px;
+    height: 60px;
     border-color: #ffe66d;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
 }
@@ -120,7 +120,7 @@ body.noscroll {
 .nav #main-title {
     font-size: 30px;
     top: 15px;
-    margin-top: 25px;
+    margin-top: 9px;
     margin-left: -14px;
     width: 200px;
     cursor: pointer;
@@ -143,7 +143,7 @@ body.noscroll {
     position: absolute;
     width: 660px;
     left: calc(50% - 95px);
-    top: 32px;
+    top: 16px;
     text-align: center;
     transition: all .2s;
 }
@@ -158,7 +158,7 @@ body.noscroll {
     font-family: 'SnowstormLight';
     color: #ffe66d;
     font-size: 14px;
-    padding: 8px 10px;
+    padding: 6px 10px;
     cursor: pointer;
     transition: all .2s;
 }
@@ -233,6 +233,7 @@ body.noscroll {
     font-size: 14px;
     margin-right: 50px;
     margin-top: 50px;
+    background-color: rgba(0,0,0,.6);
     border: 1px solid #ffe66d;
     border-radius: 5px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
@@ -241,6 +242,7 @@ body.noscroll {
     transition: all .2s;
 }
 .card:hover {
+    background-color: rgba(0,0,0,.8);
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4), 0 6px 30px 0 rgba(0,0,0,0.4);
 }
 .card div {
@@ -277,19 +279,20 @@ body.noscroll {
 }
 .card .icon {
     height: 55%;
-    background-color: rgba(0,0,0,.6);
+    /*background-color: rgba(0,0,0,.6);*/
     transition: all .2s;
 }
 .card .header {
     height: 10%;
-    background-color: rgba(0,0,0,.6);
+    /*background-color: rgba(0,0,0,.6);*/
     color: #ffe66d;
     transition: all .2s;
-    font-family: 'SnowstormKraft';
+    font-family: 'SnowstormLight';
+    font-weight: bold;
 }
 .card .description {
     height: 35%;
-    background-color: rgba(0,0,0,.6);
+    /*background-color: rgba(0,0,0,.6);*/
     font-family: 'SnowstormLight';
     color: #ffe66d;
     border-top: 1px solid #ffe66d;
@@ -400,9 +403,9 @@ body.noscroll {
     margin-right: 30px;
     margin-top: 70px;
     /*border: 1px solid #ffe66d;*/
-    border-radius: 150px;
+    border-radius: 100px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
-    overflow: hidden;
+    /*overflow: hidden;*/
     cursor: pointer;
     transition: all .2s;
 }
@@ -436,7 +439,8 @@ body.noscroll {
 .subcard canvas {
     top: 0;
     left: 0;
-    opacity: 1;
+    opacity: 0;
+    border-radius: 100px;
     transition: opacity .5s;
 }
 .subcard canvas:hover {
