@@ -305,7 +305,7 @@ body.noscroll {
     background-color: rgba(255,230,109,1);
 }*/
 
-/*Fences*/
+/* Fences */
 .category-frame {
     display: none;
     position: fixed;
@@ -329,10 +329,8 @@ body.noscroll {
 .category {
     display: none;
     position: absolute;
-    width: 940px;
-    height: auto;
-    left: calc(50% - 485px);
-    top: calc(50% - 160px);
+    height: 270px;
+    top: calc(50% - 170px);
     background: rgba(0,0,0,.6);
     text-align: center;
     margin: 0;
@@ -413,6 +411,9 @@ body.noscroll {
     /*background-color: rgba(247,255,247,1);*/
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);
 }
+.subcard.none {
+    display: none;
+}
 .subcard-3,
 .category-3 .subcard-2,
 .category-6 .subcard-2,
@@ -446,4 +447,28 @@ body.noscroll {
 .subcard canvas:hover {
     opacity: 1;
 }
+
+/* Subcategories */
+.subcategory-background {
+    top: -85px;
+    border-radius: 5px;
+    /*background-color: rgba(247,255,247,.2);*/
+    /*box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);*/
+    /*filter: drop-shadow(-1px 3px 8px rgba(0, 0, 0, 0.6));*/
+    transition: all .2s;
+}
+.category-1 .subcategory-background,
+.category-2 .subcategory-background,
+.category-4  .subcategory-background {
+    left: -30px;
+}
+.category-0 .subcategory-background,
+.category-5 .subcategory-background {
+    left: -260px;
+}
+.category-3 .subcategory-background,
+.category-6 .subcategory-background {
+    left: -145px;
+}
+
 

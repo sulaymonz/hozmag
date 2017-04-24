@@ -20,7 +20,9 @@ window.onload = function(){
         ctx1,
         ctx2,
         mask1X,
-        mask2W;
+        mask2W,
+        subcategoryBackground,
+        subcategoryCtx;
 
     // DRAWING SECTION-2 CANVAS
 
@@ -62,10 +64,12 @@ window.onload = function(){
 
     var scrollArrow = document.getElementById('scroller'),
         windowHeight = document.documentElement.clientHeight,
-        heightLevel1 = windowHeight * 0.95 - 200;
+        heightLevel1 = 170,
+        heightLevel2 = windowHeight * 0.95 - 200;
 
-    handleScroll(scrollArrow, 170, 'hide');
-    handleScroll(mainCopy, heightLevel1, 'nav');
+
+    handleScroll(scrollArrow, heightLevel1, 'hide');
+    handleScroll(mainCopy, heightLevel2, 'nav');
 
     function handleScroll(el, shrinkOn, classToToggle){
         window.addEventListener('scroll', function(){
@@ -129,6 +133,7 @@ window.onload = function(){
         leftFences = document.createElement('canvas');
         rightFences = document.createElement('canvas');
         category = document.querySelector('#categories .category-' + categoryIdx);
+        subcategoryBackground = category.querySelector('.subcategory-background');
 
         categoryFrame.classList.add('category-frame');
         leftFences.classList.add('left-fences');
@@ -148,6 +153,8 @@ window.onload = function(){
         ctx2 = rightFences.getContext('2d');
         mask1X = 0;            // x position of the rectangle that masks the left fences
         mask2W = screenWidth;  // width of the rectangle that masks the right fences
+
+        subcategoryCtx = subcategoryBackground.getContext('2d');
 
         // switching fence color set
         colorSetIdx = (colorSetIdx < Object.keys(colorSets).length) ? colorSetIdx + 1 : 1;
@@ -169,8 +176,8 @@ window.onload = function(){
 
         ctx1.fillStyle = currentColorSet[0];
         ctx2.fillStyle = currentColorSet[1];
-        ctx2.shadowBlur = 5;
-        ctx2.shadowColor = '#000';
+        /*ctx2.shadowBlur = 5;
+        ctx2.shadowColor = '#000';*/
 
         ctx1.save();
         ctx1.rotate((Math.PI / 180) * 33.5);
@@ -390,6 +397,78 @@ window.onload = function(){
                 ctx.clearRect(0, 0, 200, 200);
             }
         }
+    }
+
+    // HANDLING SUBCARD CLICK
+
+    var backgroundRadius = 99,
+        goalRadius = 990,
+        subcardPositionX = {
+
+            subcard0: 400,
+            subcard1: 630,
+
+            subcard2: 170,
+            subcard3: 400,
+            subcard4: 630,
+            subcard5: 860,
+
+            subcard6: 170,
+            subcard7: 400,
+            subcard8: 630,
+            subcard9: 860,
+
+            subcard10: 285,
+            subcard11: 515,
+            subcard12: 745,
+
+            subcard13: 170,
+            subcard14: 400,
+            subcard15: 630,
+            subcard16: 860,
+
+            subcard17: 400,
+            subcard18: 630,
+
+            subcard19: 285,
+            subcard20: 515,
+            subcard21: 745
+
+        };
+
+    for(var i=0; i<subcards.length; i++){
+        (function(idx){
+            subcards[idx].addEventListener('click', function(){
+                handleSubcardClick(idx);
+            });
+        })(i);
+    }
+
+    function handleSubcardClick(idx) {
+        for(var i=0; i<subcards.length; i++){
+            subcards[i].classList.add('none');
+        }
+        console.log(subcards.length);
+        subcategoryCtx.fillStyle = '#f7fff7';
+        window.requestAnimationFrame(function(){
+            expandBackground(idx);
+        });
+    }
+
+    function expandBackground(idx){
+        subcategoryCtx.clearRect(0, 0, 1030, 550);
+        subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, backgroundRadius, 0, Math.PI * 2, false);
+        subcategoryCtx.fill();
+
+        backgroundRadius += step/2;
+        // step += 5;
+
+        if(backgroundRadius < goalRadius) {
+            window.requestAnimationFrame(function(){
+                expandBackground(idx);
+            });
+        }
+        // else subcategoryBackground.classList.add('drawn');
     }
 
 };
