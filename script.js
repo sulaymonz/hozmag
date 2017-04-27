@@ -24,6 +24,16 @@ window.onload = function(){
         subcategoryBackground,
         subcategoryCtx;
 
+    /*window.location.hash = '#';
+
+    window.addEventListener('hashchange', function(){
+        handleHashchange();
+    });
+
+    function handleHashchange(){
+        console.log('handle hash change');
+    }*/
+
     // DRAWING SECTION-2 CANVAS
 
     drawSectionTwo();
@@ -116,6 +126,7 @@ window.onload = function(){
             cards[idx].addEventListener('click', function (){
                 handleCardClick();
                 newCategoryFrame(idx);
+                window.location.hash = 'card' + idx;
             });
         })(i);
     }
@@ -404,36 +415,28 @@ window.onload = function(){
     var backgroundRadius = 99,
         goalRadius = 990,
         subcardPositionX = {
-
             subcard0: 400,
             subcard1: 630,
-
             subcard2: 170,
             subcard3: 400,
             subcard4: 630,
             subcard5: 860,
-
             subcard6: 170,
             subcard7: 400,
             subcard8: 630,
             subcard9: 860,
-
             subcard10: 285,
             subcard11: 515,
             subcard12: 745,
-
             subcard13: 170,
             subcard14: 400,
             subcard15: 630,
             subcard16: 860,
-
             subcard17: 400,
             subcard18: 630,
-
             subcard19: 285,
             subcard20: 515,
             subcard21: 745
-
         };
 
     for(var i=0; i<subcards.length; i++){

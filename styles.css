@@ -173,7 +173,7 @@ body.noscroll {
     left: calc(50% - 30px);
     background: url("images/scroller5.png") no-repeat;
     background-size: cover;
-    opacity: .8;
+    opacity: .6;
     transition: all .6s;
 }
 #scroller.hide {
@@ -234,9 +234,9 @@ body.noscroll {
     margin-right: 50px;
     margin-top: 50px;
     background-color: rgba(0,0,0,.6);
-    border: 1px solid #ffe66d;
+    /*border: 1px solid #ffe66d;*/
     border-radius: 5px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
+    /*box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);*/
     overflow: hidden;
     cursor: pointer;
     transition: all .2s;
@@ -385,11 +385,6 @@ body.noscroll {
     /*background-color: #f7fff7;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);*/
 }
-/*.category .title span {
-    padding: 4px 10px;
-    background-color: #f7fff7;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 6px 30px 0 rgba(0, 0, 0, 0.4);
-}*/
 .subcard {
     position: relative;
     float: left;
@@ -427,9 +422,97 @@ body.noscroll {
 }
 .subcard .icon {
     height: 80%;
+}
+
+.category-0 .subcard-0 .icon {
+    background: url("images/television.png") no-repeat 50% 55%;
+    background-size: 47%;
+}
+.category-0 .subcard-1 .icon {
+    background: url("images/compact-disc.png") no-repeat 50% 55%;
+    background-size: 38%;
+}
+.category-1 .subcard-0 .icon {
+    background: url("images/fridge.png") no-repeat 50% 50%;
+    background-size: 26%;
+}
+.category-1 .subcard-1 .icon {
+    background: url("images/stove.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+.category-1 .subcard-2 .icon {
+    background: url("images/washing-machine.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+.category-1 .subcard-3 .icon {
+    background: url("images/extractor.png") no-repeat 50% 50%;
+    background-size: 43%;
+}
+.category-2 .subcard-0 .icon {
     background: url("images/kettle.png") no-repeat 50% 50%;
     background-size: 35%;
 }
+.category-2 .subcard-1 .icon {
+    background: url("images/microwave-oven.png") no-repeat 50% 53%;
+    background-size: 50%;
+}
+.category-2 .subcard-2 .icon {
+    background: url("images/meat-grinder.png") no-repeat 50% 50%;
+    background-size: 40%;
+}
+.category-2 .subcard-3 .icon {
+    background: url("images/dishes.png") no-repeat 50% 55%;
+    background-size: 35%;
+}
+.category-3 .subcard-0 .icon {
+    background: url("images/vacuum-cleaner.png") no-repeat 50% 48%;
+    background-size: 46%;
+}
+.category-3 .subcard-1 .icon {
+    background: url("images/iron-1.png") no-repeat 50% 50%;
+    background-size: 48%;
+}
+.category-3 .subcard-2 .icon {
+    background: url("images/ironing-board.png") no-repeat 50% 50%;
+    background-size: 75%;
+}
+.category-4 .subcard-0 .icon {
+    background: url("images/fan.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+.category-4 .subcard-1 .icon {
+    background: url("images/air-conditioning.png") no-repeat 50% 50%;
+    background-size: 45%;
+}
+.category-4 .subcard-2 .icon {
+    background: url("images/boiler.png") no-repeat 50% 50%;
+    background-size: 75%;
+}
+.category-4 .subcard-3 .icon {
+    background: url("images/heater.png") no-repeat 50% 50%;
+    background-size: 40%;
+}
+.category-5 .subcard-0 .icon {
+    background: url("images/tap.png") no-repeat 50% 50%;
+    background-size: 45%;
+}
+.category-5 .subcard-1 .icon {
+    background: url("images/bed.png") no-repeat 50% 58%;
+    background-size: 45%;
+}
+.category-6 .subcard-0 .icon {
+    background: url("images/generator.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+.category-6 .subcard-1 .icon {
+    background: url("images/chandelier.png") no-repeat 50% 50%;
+    background-size: 45%;
+}
+.category-6 .subcard-2 .icon {
+    background: url("images/floor.png") no-repeat 50% 50%;
+    background-size: 35%;
+}
+
 .subcard .header {
     position: absolute;
     width: 200px;
