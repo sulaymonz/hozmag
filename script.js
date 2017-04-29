@@ -1,5 +1,5 @@
 window.onbeforeunload = function () {
-    if(window.location.hash == '') document.body.scrollTop = 0;
+    // if(window.location.hash == '') document.body.scrollTop = 0;
 };
 
 window.onload = function(){
@@ -8,9 +8,9 @@ window.onload = function(){
     var tabs = document.getElementById('tabs');
     var cards = document.querySelectorAll('.card');
     var categoriesStack = document.getElementById('categories');
-    var screenWidth = window.screen.width;
-    var screenHeight = window.screen.height;
-    var canvasLength = Math.max(screenWidth, screenHeight);
+    var scrollArrow = document.getElementById('scroller');
+    var tab = document.querySelectorAll('.tab');
+    var logo = document.getElementById('main-title');
     var categoryFrameOpened = false;
     var categoryFrame;
     var category;
@@ -22,21 +22,15 @@ window.onload = function(){
     var mask2W;
     var subcategoryBackground;
     var subcategoryCtx;
-    var frameIsOpen = false;
+    // var categoryFrameOpened = false;
     var currentCategoryIdx;
     var ctx;
     var stripStep = 225;
     var stripHeight = 85;
     var stripDelay = 1;         // used for closing very thin gaps between fences that appear in some browsers
     var step = 75;              // bigger value, faster animation
-    var scrollArrow = document.getElementById('scroller');
-    var windowHeight = document.documentElement.clientHeight;
-    var heightLevel1 = 170;
-    var heightLevel2 = windowHeight * 0.95 - 200;
-    var tab = document.querySelectorAll('.tab');
     var outgoingFrame = null;
     var outgoingCategory = null;
-    var logo = document.getElementById('main-title');
     var colorSets = {
         set1: ['#ffe66d', '#333333', '#ff6b6b', '#333333'],
         set2: ['#ff6b6b', '#4ecdc4', '#ff6b6b', '#4ecdc4'],
@@ -84,21 +78,21 @@ window.onload = function(){
     });
 
     function handleHashchange(hash){
-        console.log(hash);
         var keyword = hash.split('/')[0];
-        console.log(keyword);
 
         var map = {
             '': function(){
-                if(frameIsOpen) closeCategoryFrame();
+                if(categoryFrameOpened) closeCategoryFrame();
+                else releaseNavbar();
                 resetOutgoings();
-                frameIsOpen = false;
+                // categoryFrameOpened = false;
             },
             '#category': function(){
                 var index = hash.split('#category/')[1].trim();
                 if (index <= 6){
-                    fixNavbar();
-                    if(frameIsOpen) {
+                    fixNavbarToTop();
+                    disableBodyScroll();
+                    if(categoryFrameOpened) {
                         outgoingFrame = categoryFrame;
                         outgoingCategory = category;
                     }
@@ -106,10 +100,11 @@ window.onload = function(){
                 }
             },
             '#cards': function(){
-                if(frameIsOpen) closeCategoryFrame();
-                document.body.scrollTop = screenHeight;
+                if(categoryFrameOpened) closeCategoryFrame();
+                else enableBodyScroll();
+                scrollToSection3();
                 resetOutgoings();
-                frameIsOpen = false;
+                // categoryFrameOpened = false;
             }
         };
         if(map[keyword]){
@@ -128,9 +123,10 @@ window.onload = function(){
 
     function drawSectionTwo(){
         var diagonalstrips = document.getElementById('diagonal-strips');
+        var canvasLength = Math.max(window.screen.width, window.screen.height);
 
-        diagonalstrips.width = screenWidth;
-        diagonalstrips.height = screenHeight;
+        diagonalstrips.width = window.screen.width;
+        diagonalstrips.height = window.screen.height;
 
         var ctx = diagonalstrips.getContext('2d');
 
@@ -160,8 +156,8 @@ window.onload = function(){
 
     // ANIMATING MAIN COPY AND SCROLL ICON ON SCROLL
 
-    handleScroll(scrollArrow, heightLevel1, 'hide');
-    handleScroll(mainCopy, heightLevel2, 'nav');
+    handleScroll(scrollArrow, 170, 'hide');
+    handleScroll(mainCopy, document.documentElement.clientHeight * 0.95 - 200, 'nav');
 
     function handleScroll(el, shrinkOn, classToToggle){
         window.addEventListener('scroll', function(){
@@ -181,9 +177,21 @@ window.onload = function(){
 
     window.addEventListener('scroll', function(){
         var distanceY = window.pageYOffset || document.documentElement.scrollTop,
-            top = Math.max(0 ,windowHeight * 0.475 - 100 - distanceY);
+            top = Math.max(0 ,document.documentElement.clientHeight * 0.475 - 100 - distanceY);
         mainCopy.style.top = top + 'px';
     });
+
+    function disableBodyScroll(){
+        document.body.classList.add('noscroll');
+    }
+
+    function enableBodyScroll() {
+        document.body.classList.remove('noscroll');
+    }
+
+    function scrollToSection3(){
+        document.body.scrollTop = window.screen.height;
+    }
 
     // HANDLING THE CARD CLICK (FENCES IN)
 
@@ -205,10 +213,14 @@ window.onload = function(){
         }
     });
 
-    function fixNavbar(){
+    function fixNavbarToTop(){
         mainCopy.classList.add('nav');            // fixing the nav-bar to top for cases when it's not already there
         tabs.className = 'block show';
-        document.body.classList.add('noscroll');  // disable body scroll to prevent nav-bar moving
+    }
+
+    function releaseNavbar(){
+        mainCopy.classList.remove('nav');            // fixing the nav-bar to top for cases when it's not already there
+        tabs.className = '';
     }
 
     function newCategoryFrame(categoryIdx){
@@ -237,7 +249,7 @@ window.onload = function(){
         ctx1 = leftFences.getContext('2d');
         ctx2 = rightFences.getContext('2d');
         mask1X = 0;            // x position of the rectangle that masks the left fences
-        mask2W = screenWidth;  // width of the rectangle that masks the right fences
+        mask2W = window.screen.width;  // width of the rectangle that masks the right fences
 
         subcategoryCtx = subcategoryBackground.getContext('2d');
 
@@ -248,15 +260,16 @@ window.onload = function(){
         // category.style.borderColor = currentColorSet[1];
         category.querySelector('.title').style.color = currentColorSet[1];
 
-        frameIsOpen = true;
+        categoryFrameOpened = true;
         window.requestAnimationFrame(moveInFences);
     }
 
     function drawFences(){
-        leftFences.width = screenWidth;
-        leftFences.height = screenHeight;
-        rightFences.width = screenWidth;
-        rightFences.height = screenHeight;
+        var canvasLength = Math.max(window.screen.width, window.screen.height);
+        leftFences.width = window.screen.width;
+        leftFences.height = window.screen.height;
+        rightFences.width = window.screen.width;
+        rightFences.height = window.screen.height;
 
         ctx1.fillStyle = currentColorSet[0];
         ctx2.fillStyle = currentColorSet[1];
@@ -292,8 +305,8 @@ window.onload = function(){
 
         ctx1.restore();
         ctx2.restore();
-        ctx1.clearRect(mask1X, 0, screenWidth - mask1X, screenHeight);
-        ctx2.clearRect(0, 0 , mask2W, screenHeight);
+        ctx1.clearRect(mask1X, 0, window.screen.width - mask1X, window.screen.height);
+        ctx2.clearRect(0, 0 , mask2W, window.screen.height);
     }
 
     function moveInFences(){
@@ -302,7 +315,7 @@ window.onload = function(){
         mask1X += step;
         mask2W -= step;
         // repeat till masks leave the screen
-        if (mask1X < screenWidth + step && mask2W > -step){
+        if (mask1X < window.screen.width + step && mask2W > -step){
             window.requestAnimationFrame(moveInFences);
         }
         else {
@@ -317,14 +330,14 @@ window.onload = function(){
         mask1X -= step;
         mask2W += step;
         // repeat till masks cover all the screen
-        if (mask1X > -step && mask2W < screenWidth + step){
+        if (mask1X > -step && mask2W < window.screen.width + step){
             window.requestAnimationFrame(moveOutFences);
         }
         else {
             removeFrame(categoryFrame, category);
             // reset the masks for the next animation
             mask1X = 0;
-            mask2W = screenWidth;
+            mask2W = window.screen.width;
         }
 
     }
@@ -485,14 +498,12 @@ window.onload = function(){
         subcategoryCtx.fill();
 
         backgroundRadius += step/2;
-        // step += 5;
 
         if(backgroundRadius < goalRadius) {
             window.requestAnimationFrame(function(){
                 expandBackground(idx);
             });
         }
-        // else subcategoryBackground.classList.add('drawn');
     }
 
 };
