@@ -1,38 +1,126 @@
 window.onbeforeunload = function () {
-    window.scrollTo(0, 0);  // document scrolls to top on refresh
+    if(window.location.hash == '') document.body.scrollTop = 0;
 };
 
 window.onload = function(){
 
-    // GLOBALS
-    var mainCopy = document.getElementById('main-copy-wrap'),
-        tabs = document.getElementById('tabs'),
-        cards = document.querySelectorAll('.card'),
-        categoriesStack = document.getElementById('categories'),
-        screenWidth = window.screen.width,
-        screenHeight = window.screen.height,
-        canvasLength = Math.max(screenWidth, screenHeight),
-        categoryFrameOpened = false,
-        categoryFrame,
-        category,
-        leftFences,
-        rightFences,
-        ctx1,
-        ctx2,
-        mask1X,
-        mask2W,
-        subcategoryBackground,
-        subcategoryCtx;
+    var mainCopy = document.getElementById('main-copy-wrap');
+    var tabs = document.getElementById('tabs');
+    var cards = document.querySelectorAll('.card');
+    var categoriesStack = document.getElementById('categories');
+    var screenWidth = window.screen.width;
+    var screenHeight = window.screen.height;
+    var canvasLength = Math.max(screenWidth, screenHeight);
+    var categoryFrameOpened = false;
+    var categoryFrame;
+    var category;
+    var leftFences;
+    var rightFences;
+    var ctx1;
+    var ctx2;
+    var mask1X;
+    var mask2W;
+    var subcategoryBackground;
+    var subcategoryCtx;
+    var frameIsOpen = false;
+    var currentCategoryIdx;
+    var ctx;
+    var stripStep = 225;
+    var stripHeight = 85;
+    var stripDelay = 1;         // used for closing very thin gaps between fences that appear in some browsers
+    var step = 75;              // bigger value, faster animation
+    var scrollArrow = document.getElementById('scroller');
+    var windowHeight = document.documentElement.clientHeight;
+    var heightLevel1 = 170;
+    var heightLevel2 = windowHeight * 0.95 - 200;
+    var tab = document.querySelectorAll('.tab');
+    var outgoingFrame = null;
+    var outgoingCategory = null;
+    var logo = document.getElementById('main-title');
+    var colorSets = {
+        set1: ['#ffe66d', '#333333', '#ff6b6b', '#333333'],
+        set2: ['#ff6b6b', '#4ecdc4', '#ff6b6b', '#4ecdc4'],
+        set3: ['#333333', '#ffe66d', '#333333', '#ff6b6b'],
+        set4: ['#4ecdc4', '#ff6b6b', '#4ecdc4', '#ff6b6b']
+    };
+    var colorSetIdx = 0;
+    var currentColorSet = colorSets['set1'];
+    var subcards = document.querySelectorAll('.subcard');
+    var subcardCanvas;
+    var subcardHover;
+    var backgroundRadius = 99;
+    var goalRadius = 990;
+    var subcardPositionX = {
+            subcard0: 400,
+            subcard1: 630,
+            subcard2: 170,
+            subcard3: 400,
+            subcard4: 630,
+            subcard5: 860,
+            subcard6: 170,
+            subcard7: 400,
+            subcard8: 630,
+            subcard9: 860,
+            subcard10: 285,
+            subcard11: 515,
+            subcard12: 745,
+            subcard13: 170,
+            subcard14: 400,
+            subcard15: 630,
+            subcard16: 860,
+            subcard17: 400,
+            subcard18: 630,
+            subcard19: 285,
+            subcard20: 515,
+            subcard21: 745
+        };
 
-    /*window.location.hash = '#';
+    // HANDLING HASH CHANGE
+
+    handleHashchange(decodeURI(window.location.hash));
 
     window.addEventListener('hashchange', function(){
-        handleHashchange();
+        handleHashchange(decodeURI(window.location.hash));
     });
 
-    function handleHashchange(){
-        console.log('handle hash change');
-    }*/
+    function handleHashchange(hash){
+        console.log(hash);
+        var keyword = hash.split('/')[0];
+        console.log(keyword);
+
+        var map = {
+            '': function(){
+                if(frameIsOpen) closeCategoryFrame();
+                resetOutgoings();
+                frameIsOpen = false;
+            },
+            '#category': function(){
+                var index = hash.split('#category/')[1].trim();
+                if (index <= 6){
+                    fixNavbar();
+                    if(frameIsOpen) {
+                        outgoingFrame = categoryFrame;
+                        outgoingCategory = category;
+                    }
+                    newCategoryFrame(index);
+                }
+            },
+            '#cards': function(){
+                if(frameIsOpen) closeCategoryFrame();
+                document.body.scrollTop = screenHeight;
+                resetOutgoings();
+                frameIsOpen = false;
+            }
+        };
+        if(map[keyword]){
+            map[keyword]();
+        }
+    }
+
+    function resetOutgoings(){
+        outgoingFrame = null;     // the vars for outgoings should be cleared to prevent the last but one
+        outgoingCategory = null;  // opened category from deleting on the next frame opening
+    }
 
     // DRAWING SECTION-2 CANVAS
 
@@ -72,12 +160,6 @@ window.onload = function(){
 
     // ANIMATING MAIN COPY AND SCROLL ICON ON SCROLL
 
-    var scrollArrow = document.getElementById('scroller'),
-        windowHeight = document.documentElement.clientHeight,
-        heightLevel1 = 170,
-        heightLevel2 = windowHeight * 0.95 - 200;
-
-
     handleScroll(scrollArrow, heightLevel1, 'hide');
     handleScroll(mainCopy, heightLevel2, 'nav');
 
@@ -105,33 +187,25 @@ window.onload = function(){
 
     // HANDLING THE CARD CLICK (FENCES IN)
 
-    var currentCategoryIdx,
-        ctx,
-        stripStep = 225,
-        stripHeight = 85,
-        stripDelay = 1,         // used for closing very thin gaps between fences that appear in some browsers
-        step = 75,              // bigger value, faster animation
-        colorSets = {
-            set1: ['#ffe66d', '#333333', '#ff6b6b', '#333333'],
-            set2: ['#ff6b6b', '#4ecdc4', '#ff6b6b', '#4ecdc4'],
-            set3: ['#333333', '#ffe66d', '#333333', '#ff6b6b'],
-            set4: ['#4ecdc4', '#ff6b6b', '#4ecdc4', '#ff6b6b']
-        },
-        colorSetIdx = 0,
-        currentColorSet = ['#333333', '#ffe66d', '#ff6b6b'];
-        // angleCoefficient = -1;  // horizontally flips the fences. 2 possible values: -1, 1
-
     for (var i=0; i<cards.length; i++){
         (function(idx){
             cards[idx].addEventListener('click', function (){
-                handleCardClick();
-                newCategoryFrame(idx);
-                window.location.hash = 'card' + idx;
+                window.location.hash = 'category/' + idx;
             });
         })(i);
     }
 
-    function handleCardClick(){
+    // creating event that triggers when a new frame is built
+    var buildFrameEvent = document.createEvent('Event');
+    buildFrameEvent.initEvent('buildFrameEvent', true, true);
+
+    document.addEventListener('buildFrameEvent', function () {
+        if(outgoingFrame && outgoingCategory) {
+            removeFrame(outgoingFrame, outgoingCategory);
+        }
+    });
+
+    function fixNavbar(){
         mainCopy.classList.add('nav');            // fixing the nav-bar to top for cases when it's not already there
         tabs.className = 'block show';
         document.body.classList.add('noscroll');  // disable body scroll to prevent nav-bar moving
@@ -168,14 +242,13 @@ window.onload = function(){
         subcategoryCtx = subcategoryBackground.getContext('2d');
 
         // switching fence color set
-        colorSetIdx = (colorSetIdx < Object.keys(colorSets).length) ? colorSetIdx + 1 : 1;
+        colorSetIdx = (colorSetIdx < 4) ? colorSetIdx + 1 : 1;
         currentColorSet = colorSets['set' + colorSetIdx];
         category.style.backgroundColor = currentColorSet[0];
         // category.style.borderColor = currentColorSet[1];
         category.querySelector('.title').style.color = currentColorSet[1];
 
-        // angleCoefficient = (angleCoefficient == -1) ? 1 : -1;
-
+        frameIsOpen = true;
         window.requestAnimationFrame(moveInFences);
     }
 
@@ -279,49 +352,25 @@ window.onload = function(){
 
     // HANDLING THE TAB CLICK
 
-    var tab = document.querySelectorAll('.tab'),
-        outgoingFrame = null,
-        outgoingCategory = null;
-
     for(var i=0; i<tab.length; i++){
         (function(idx){
             tab[idx].addEventListener('click', function(){
                 if(idx != currentCategoryIdx){
-                    outgoingFrame = categoryFrame;
-                    outgoingCategory = category;
-                    newCategoryFrame(idx);
+                    window.location.hash = 'category/' + idx;
                 }
             });
         })(i);
     }
 
-    // creating event that triggers when a new frame is built
-    var buildFrameEvent = document.createEvent('Event');
-    buildFrameEvent.initEvent('buildFrameEvent', true, true);
-
-    document.addEventListener('buildFrameEvent', function () {
-        if(outgoingFrame) {
-            removeFrame(outgoingFrame, outgoingCategory);
-        }
-    });
-
     // HANDLING LOGO CLICK
-
-    var logo = document.getElementById('main-title');
 
     logo.addEventListener('click', function(){
         if(categoryFrameOpened) {
-            closeCategoryFrame();
-            outgoingFrame = null;     // the vars for outgoings should be cleared to prevent the last but one
-            outgoingCategory = null;  // opened category from deleting on the next frame opening
+            window.location.hash = 'cards';
         }
     });
 
     // SUBCARD HOVER ANIMATION
-
-    var subcards = document.querySelectorAll('.subcard'),
-        subcardCanvas,
-        subcardHover;
 
     for(var i=0; i<subcards.length; i++){
         (function(idx){
@@ -412,33 +461,6 @@ window.onload = function(){
 
     // HANDLING SUBCARD CLICK
 
-    var backgroundRadius = 99,
-        goalRadius = 990,
-        subcardPositionX = {
-            subcard0: 400,
-            subcard1: 630,
-            subcard2: 170,
-            subcard3: 400,
-            subcard4: 630,
-            subcard5: 860,
-            subcard6: 170,
-            subcard7: 400,
-            subcard8: 630,
-            subcard9: 860,
-            subcard10: 285,
-            subcard11: 515,
-            subcard12: 745,
-            subcard13: 170,
-            subcard14: 400,
-            subcard15: 630,
-            subcard16: 860,
-            subcard17: 400,
-            subcard18: 630,
-            subcard19: 285,
-            subcard20: 515,
-            subcard21: 745
-        };
-
     for(var i=0; i<subcards.length; i++){
         (function(idx){
             subcards[idx].addEventListener('click', function(){
@@ -451,7 +473,6 @@ window.onload = function(){
         for(var i=0; i<subcards.length; i++){
             subcards[i].classList.add('none');
         }
-        console.log(subcards.length);
         subcategoryCtx.fillStyle = '#f7fff7';
         window.requestAnimationFrame(function(){
             expandBackground(idx);
