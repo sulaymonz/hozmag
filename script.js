@@ -1,40 +1,140 @@
 window.onbeforeunload = function () {
-    window.scrollTo(0, 0);  // document scrolls to top on refresh
+    if(window.location.hash == '') document.body.scrollTop = 0;
 };
 
 window.onload = function(){
 
-    // globals
-    var mainCopy = document.getElementById('main-copy-wrap'),
-        tabs = document.getElementById('tabs'),
-        cards = document.querySelectorAll('.card'),
-        categoriesStack = document.getElementById('categories'),
-        screenWidth = window.screen.width,
-        screenHeight = window.screen.height,
-        canvasLength = Math.max(screenWidth, screenHeight),
-        categoryFrame,
-        category,
-        leftFences,
-        rightFences,
-        closeButton,
-        ctx1,
-        ctx2,
-        mask1X,
-        mask2W;
+    var mainCopy = document.getElementById('main-copy-wrap');
+    var tabs = document.getElementById('tabs');
+    var cards = document.querySelectorAll('.card');
+    var categoriesStack = document.getElementById('categories');
+    var screenWidth = window.screen.width;
+    var screenHeight = window.screen.height;
+    var canvasLength = Math.max(screenWidth, screenHeight);
+    var categoryFrameOpened = false;
+    var categoryFrame;
+    var category;
+    var leftFences;
+    var rightFences;
+    var ctx1;
+    var ctx2;
+    var mask1X;
+    var mask2W;
+    var subcategoryBackground;
+    var subcategoryCtx;
+    var frameIsOpen = false;
+    var currentCategoryIdx;
+    var ctx;
+    var stripStep = 225;
+    var stripHeight = 85;
+    var stripDelay = 1;         // used for closing very thin gaps between fences that appear in some browsers
+    var step = 75;              // bigger value, faster animation
+    var scrollArrow = document.getElementById('scroller');
+    var windowHeight = document.documentElement.clientHeight;
+    var heightLevel1 = 170;
+    var heightLevel2 = windowHeight * 0.95 - 200;
+    var tab = document.querySelectorAll('.tab');
+    var outgoingFrame = null;
+    var outgoingCategory = null;
+    var logo = document.getElementById('main-title');
+    var colorSets = {
+        set1: ['#ffe66d', '#333333', '#ff6b6b', '#333333'],
+        set2: ['#ff6b6b', '#4ecdc4', '#ff6b6b', '#4ecdc4'],
+        set3: ['#333333', '#ffe66d', '#333333', '#ff6b6b'],
+        set4: ['#4ecdc4', '#ff6b6b', '#4ecdc4', '#ff6b6b']
+    };
+    var colorSetIdx = 0;
+    var currentColorSet = colorSets['set1'];
+    var subcards = document.querySelectorAll('.subcard');
+    var subcardCanvas;
+    var subcardHover;
+    var backgroundRadius = 99;
+    var goalRadius = 990;
+    var subcardPositionX = {
+            subcard0: 400,
+            subcard1: 630,
+            subcard2: 170,
+            subcard3: 400,
+            subcard4: 630,
+            subcard5: 860,
+            subcard6: 170,
+            subcard7: 400,
+            subcard8: 630,
+            subcard9: 860,
+            subcard10: 285,
+            subcard11: 515,
+            subcard12: 745,
+            subcard13: 170,
+            subcard14: 400,
+            subcard15: 630,
+            subcard16: 860,
+            subcard17: 400,
+            subcard18: 630,
+            subcard19: 285,
+            subcard20: 515,
+            subcard21: 745
+        };
 
-    // Drawing section-2 canvas
+    // HANDLING HASH CHANGE
+
+    handleHashchange(decodeURI(window.location.hash));
+
+    window.addEventListener('hashchange', function(){
+        handleHashchange(decodeURI(window.location.hash));
+    });
+
+    function handleHashchange(hash){
+        console.log(hash);
+        var keyword = hash.split('/')[0];
+        console.log(keyword);
+
+        var map = {
+            '': function(){
+                if(frameIsOpen) closeCategoryFrame();
+                resetOutgoings();
+                frameIsOpen = false;
+            },
+            '#category': function(){
+                var index = hash.split('#category/')[1].trim();
+                if (index <= 6){
+                    fixNavbar();
+                    if(frameIsOpen) {
+                        outgoingFrame = categoryFrame;
+                        outgoingCategory = category;
+                    }
+                    newCategoryFrame(index);
+                }
+            },
+            '#cards': function(){
+                if(frameIsOpen) closeCategoryFrame();
+                document.body.scrollTop = screenHeight;
+                resetOutgoings();
+                frameIsOpen = false;
+            }
+        };
+        if(map[keyword]){
+            map[keyword]();
+        }
+    }
+
+    function resetOutgoings(){
+        outgoingFrame = null;     // the vars for outgoings should be cleared to prevent the last but one
+        outgoingCategory = null;  // opened category from deleting on the next frame opening
+    }
+
+    // DRAWING SECTION-2 CANVAS
 
     drawSectionTwo();
 
     function drawSectionTwo(){
-        var diagonalStripes = document.getElementById('diagonal-stripes');
+        var diagonalstrips = document.getElementById('diagonal-strips');
 
-        diagonalStripes.width = screenWidth;
-        diagonalStripes.height = screenHeight;
+        diagonalstrips.width = screenWidth;
+        diagonalstrips.height = screenHeight;
 
-        var ctx = diagonalStripes.getContext('2d');
+        var ctx = diagonalstrips.getContext('2d');
 
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = '#333333';
         ctx.rotate((Math.PI / 180) * 33.5);
         ctx.translate(canvasLength/2, canvasLength/2);
 
@@ -43,7 +143,7 @@ window.onload = function(){
         }
     }
 
-    // Bouncing scroll icon
+    // BOUNCING SCROLL ICON
 
     animateScrollIcon();
 
@@ -58,14 +158,10 @@ window.onload = function(){
         },2500);
     }
 
-    // Animating main copy and scroll icon on scroll
+    // ANIMATING MAIN COPY AND SCROLL ICON ON SCROLL
 
-    var scrollArrow = document.getElementById('scroller'),
-        windowHeight = document.documentElement.clientHeight,
-        heightLevel1 = windowHeight * 0.95 - 200;
-
-    handleScroll(scrollArrow, 170, 'hide');
-    handleScroll(mainCopy, heightLevel1, 'nav');
+    handleScroll(scrollArrow, heightLevel1, 'hide');
+    handleScroll(mainCopy, heightLevel2, 'nav');
 
     function handleScroll(el, shrinkOn, classToToggle){
         window.addEventListener('scroll', function(){
@@ -89,71 +185,83 @@ window.onload = function(){
         mainCopy.style.top = top + 'px';
     });
 
-    // Handling the card click (fences in)
+    // HANDLING THE CARD CLICK (FENCES IN)
 
     for (var i=0; i<cards.length; i++){
         (function(idx){
             cards[idx].addEventListener('click', function (){
-                handleCardClick(idx);
+                window.location.hash = 'category/' + idx;
             });
         })(i);
     }
 
-    function handleCardClick(idx){
-        newCategoryFrame(idx);
+    // creating event that triggers when a new frame is built
+    var buildFrameEvent = document.createEvent('Event');
+    buildFrameEvent.initEvent('buildFrameEvent', true, true);
 
-        categoryFrame.classList.add('block');
+    document.addEventListener('buildFrameEvent', function () {
+        if(outgoingFrame && outgoingCategory) {
+            removeFrame(outgoingFrame, outgoingCategory);
+        }
+    });
+
+    function fixNavbar(){
         mainCopy.classList.add('nav');            // fixing the nav-bar to top for cases when it's not already there
-        tabs.className = 'block show',
+        tabs.className = 'block show';
         document.body.classList.add('noscroll');  // disable body scroll to prevent nav-bar moving
+    }
+
+    function newCategoryFrame(categoryIdx){
+        currentCategoryIdx = categoryIdx;
+
+        categoryFrame = document.createElement('div');
+        leftFences = document.createElement('canvas');
+        rightFences = document.createElement('canvas');
+        category = document.querySelector('#categories .category-' + categoryIdx);
+        subcategoryBackground = category.querySelector('.subcategory-background');
+
+        categoryFrame.classList.add('category-frame');
+        leftFences.classList.add('left-fences');
+        rightFences.classList.add('right-fences');
+
+        categoryFrame.appendChild(leftFences);
+        categoryFrame.appendChild(rightFences);
+        categoryFrame.appendChild(category);
+
+        category.classList.add('block');
+        category.classList.remove('hidden');
+
+        document.body.appendChild(categoryFrame);
+        categoryFrame.classList.add('block');
 
         ctx1 = leftFences.getContext('2d');
         ctx2 = rightFences.getContext('2d');
         mask1X = 0;            // x position of the rectangle that masks the left fences
         mask2W = screenWidth;  // width of the rectangle that masks the right fences
 
+        subcategoryCtx = subcategoryBackground.getContext('2d');
+
+        // switching fence color set
+        colorSetIdx = (colorSetIdx < 4) ? colorSetIdx + 1 : 1;
+        currentColorSet = colorSets['set' + colorSetIdx];
+        category.style.backgroundColor = currentColorSet[0];
+        // category.style.borderColor = currentColorSet[1];
+        category.querySelector('.title').style.color = currentColorSet[1];
+
+        frameIsOpen = true;
         window.requestAnimationFrame(moveInFences);
     }
 
-    function newCategoryFrame(categoryIdx){
-        categoryFrame = document.createElement('div');
-        leftFences = document.createElement('canvas');
-        rightFences = document.createElement('canvas');
-        closeButton = document.createElement('div');
-        category = document.querySelector('#categories .category-' + categoryIdx);
-
-        categoryFrame.classList.add('category-frame');
-        leftFences.classList.add('left-fences');
-        rightFences.classList.add('right-fences');
-        closeButton.classList.add('close-card');
-
-        closeButton.innerHTML = 'закрыть';
-
-        closeButton.addEventListener('click', closeCard);
-
-        categoryFrame.appendChild(leftFences);
-        categoryFrame.appendChild(rightFences);
-        categoryFrame.appendChild(closeButton);
-        categoryFrame.appendChild(category);
-
-        category.classList.add('block');
-
-        document.body.appendChild(categoryFrame);
-    }
-
-    function moveInFences(){
+    function drawFences(){
         leftFences.width = screenWidth;
         leftFences.height = screenHeight;
         rightFences.width = screenWidth;
         rightFences.height = screenHeight;
 
-        ctx1.fillStyle = '#000';
-        ctx2.fillStyle = '#ffe66d';
-
-        var ctx = ctx1,
-            stripeStep = 225,
-            stripeHeight = 85,
-            step = 75; // bigger value, faster animation
+        ctx1.fillStyle = currentColorSet[0];
+        ctx2.fillStyle = currentColorSet[1];
+        /*ctx2.shadowBlur = 5;
+        ctx2.shadowColor = '#000';*/
 
         ctx1.save();
         ctx1.rotate((Math.PI / 180) * 33.5);
@@ -163,18 +271,22 @@ window.onload = function(){
         ctx2.rotate((Math.PI / 180) * 33.5);
         ctx2.translate(canvasLength/2, canvasLength/2);
 
-        for (var i=-2*canvasLength; i<2*canvasLength; i+=stripeStep){
+        ctx = ctx1;
+
+        for (var i=-2*canvasLength; i<2*canvasLength; i+=stripStep){
             // drawing left and right fences in different canvases
-            ctx.fillRect(-canvasLength, i, canvasLength*2, stripeHeight);
+            ctx.fillRect(-canvasLength, i - stripDelay, canvasLength*2, stripHeight + stripDelay*2);
             if (i%2 == 0) {
                 ctx = ctx2;
-                stripeStep = 85;
-                stripeHeight = 225;
+                stripStep = 85;
+                stripHeight = 225;
+                stripDelay = 0;
             }
             else {
                 ctx = ctx1;
-                stripeStep = 225;
-                stripeHeight = 85;
+                stripStep = 225;
+                stripHeight = 85;
+                stripDelay = 1;
             }
         }
 
@@ -182,38 +294,83 @@ window.onload = function(){
         ctx2.restore();
         ctx1.clearRect(mask1X, 0, screenWidth - mask1X, screenHeight);
         ctx2.clearRect(0, 0 , mask2W, screenHeight);
+    }
 
+    function moveInFences(){
+        drawFences();
         // reducing masks' width, so the fences are seen more by each frame
         mask1X += step;
         mask2W -= step;
-
         // repeat till masks leave the screen
         if (mask1X < screenWidth + step && mask2W > -step){
             window.requestAnimationFrame(moveInFences);
         }
+        else {
+            categoryFrameOpened = true;
+            document.dispatchEvent(buildFrameEvent);
+        }
     }
 
-    function closeCard(){
-        categoryFrame.classList.remove('block');
-        tabs.classList.remove('show');
+    function moveOutFences(){
+        drawFences();
+        // expanding masks, so the fences are hidden more by each frame
+        mask1X -= step;
+        mask2W += step;
+        // repeat till masks cover all the screen
+        if (mask1X > -step && mask2W < screenWidth + step){
+            window.requestAnimationFrame(moveOutFences);
+        }
+        else {
+            removeFrame(categoryFrame, category);
+            // reset the masks for the next animation
+            mask1X = 0;
+            mask2W = screenWidth;
+        }
 
+    }
+
+    function removeFrame(frame, category){
+        frame.classList.remove('block');
+        categoriesStack.appendChild(category);
+        document.body.removeChild(frame);
+    }
+
+    function closeCategoryFrame(){
+        category.classList.add('hidden');
+        categoryFrameOpened = false;
+
+        tabs.classList.remove('show');
         setTimeout(function(){
             tabs.classList.remove('block');
-        }, 500);
+            document.body.classList.remove('noscroll');  // enable body scroll
+        }, 220);
 
-        categoriesStack.appendChild(category);
-        document.body.classList.remove('noscroll');  // enable body scroll
-
-        // reset the masks for the next animation
-        mask1X = 0;
-        mask2W = screenWidth;
+        setTimeout(function(){
+            window.requestAnimationFrame(moveOutFences);
+        }, 50);
     }
 
-    // Subcard mouseover animation
+    // HANDLING THE TAB CLICK
 
-    var subcards = document.querySelectorAll('.subcard'),
-        subcardCanvas,
-        subcardHover;
+    for(var i=0; i<tab.length; i++){
+        (function(idx){
+            tab[idx].addEventListener('click', function(){
+                if(idx != currentCategoryIdx){
+                    window.location.hash = 'category/' + idx;
+                }
+            });
+        })(i);
+    }
+
+    // HANDLING LOGO CLICK
+
+    logo.addEventListener('click', function(){
+        if(categoryFrameOpened) {
+            window.location.hash = 'cards';
+        }
+    });
+
+    // SUBCARD HOVER ANIMATION
 
     for(var i=0; i<subcards.length; i++){
         (function(idx){
@@ -251,8 +408,8 @@ window.onload = function(){
             ctx.globalCompositeOperation = 'destination-over';
             ctx.clearRect(0, 0, 200, 200);
 
-            ctx.strokeStyle = '#ff6b6b';
-            // ctx.lineWidth = 1.5;
+            ctx.strokeStyle = currentColorSet[2];
+            ctx.lineWidth = 1.5;
             ctx.save();
             ctx.translate(100, 100);
 
@@ -273,7 +430,7 @@ window.onload = function(){
             ctx.stroke();
 
             ctx.rotate((Math.PI / 180) * 5);
-            ctx.strokeStyle = '#000';
+            ctx.strokeStyle = currentColorSet[3];
             ctx.beginPath();
 
             // fixed lines
@@ -289,7 +446,7 @@ window.onload = function(){
 
             if(lEven >= 10) dlEven = -1;
             else if(lEven <= 2) dlEven = 1;
-            lEven = lEven + dlEven/4; // bigger denominator, slower length change animation
+            lEven = lEven + dlEven/4; // bigger denominator, slower length-change animation
 
             if(lOdd >= 10) dlOdd = -1;
              else if(lOdd <= 2) dlOdd = 1;
@@ -300,6 +457,42 @@ window.onload = function(){
                 ctx.clearRect(0, 0, 200, 200);
             }
         }
+    }
+
+    // HANDLING SUBCARD CLICK
+
+    for(var i=0; i<subcards.length; i++){
+        (function(idx){
+            subcards[idx].addEventListener('click', function(){
+                handleSubcardClick(idx);
+            });
+        })(i);
+    }
+
+    function handleSubcardClick(idx) {
+        for(var i=0; i<subcards.length; i++){
+            subcards[i].classList.add('none');
+        }
+        subcategoryCtx.fillStyle = '#f7fff7';
+        window.requestAnimationFrame(function(){
+            expandBackground(idx);
+        });
+    }
+
+    function expandBackground(idx){
+        subcategoryCtx.clearRect(0, 0, 1030, 550);
+        subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, backgroundRadius, 0, Math.PI * 2, false);
+        subcategoryCtx.fill();
+
+        backgroundRadius += step/2;
+        // step += 5;
+
+        if(backgroundRadius < goalRadius) {
+            window.requestAnimationFrame(function(){
+                expandBackground(idx);
+            });
+        }
+        // else subcategoryBackground.classList.add('drawn');
     }
 
 };
