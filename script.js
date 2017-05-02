@@ -502,12 +502,211 @@ window.onload = function(){
         subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, backgroundRadius, 0, Math.PI * 2, false);
         subcategoryCtx.fill();
 
-        backgroundRadius += step/2;
+        backgroundRadius += step/3;
 
         if(backgroundRadius < goalRadius) {
             window.requestAnimationFrame(function(){
                 expandBackground(idx);
             });
+        }
+        else {
+            createSubcategoryFrame(idx);
+        }
+    }
+
+    var subcategoryFrame;
+    var goods = {
+        category0: {
+            subcategory0: {
+                good0: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good1: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good2: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good3: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good4: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good5: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good6: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good7: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good8: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good9: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good10: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good11: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good12: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good13: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good14: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                }
+            },
+            subcategory1: {
+                good0: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good1: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good2: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good3: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good4: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good5: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good6: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good7: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good8: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good9: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good10: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good11: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good12: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good13: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good14: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                }
+            }
+        }
+    };
+
+    function createSubcategoryFrame(idx){
+        subcategoryFrame = category.querySelector('.subcategory-frame');
+        subcategoryFrame.classList.add('block');
+        setTimeout(function(){
+            subcategoryFrame.classList.add('show');
+        }, 10);
+        generateGoodsList(idx);
+    }
+
+    function generateGoodsList(idx){
+        for (var i=0; i<Object.keys(goods['category0']['subcategory' + idx]).length; i++){
+            var name = goods['category0']['subcategory' + idx]['good' + i]['name'];
+            var price = goods['category0']['subcategory' + idx]['good' + i]['price'];
+            var thumb = goods['category0']['subcategory' + idx]['good' + i]['thumb'];
+
+            var good = document.createElement('div');
+            var goodName = document.createElement('div');
+            var goodPrice = document.createElement('div');
+            var goodThumb = document.createElement('div');
+
+            good.className = 'good';
+            goodName.className = 'good-name';
+            goodPrice.className = 'good-price';
+            goodThumb.className = 'good-thumb';
+
+            goodName.innerHTML = name;
+            goodPrice.innerHTML = price;
+            goodThumb.style.backgroundImage = "url(\'" + thumb + "\')";
+
+            good.appendChild(goodThumb);
+            good.appendChild(goodName);
+            good.appendChild(goodPrice);
+            subcategoryFrame.appendChild(good);
         }
     }
 
