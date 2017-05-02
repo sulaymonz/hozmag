@@ -1,5 +1,5 @@
 window.onbeforeunload = function () {
-    // if(window.location.hash == '') document.body.scrollTop = 0;
+    if(window.location.hash == '') document.body.scrollTop = 0;
 };
 
 window.onload = function(){
@@ -11,6 +11,9 @@ window.onload = function(){
     var scrollArrow = document.getElementById('scroller');
     var tab = document.querySelectorAll('.tab');
     var logo = document.getElementById('main-title');
+    var screenWidth = window.screen.width;
+    var screenHeight = window.screen.height;
+    var canvasLength = Math.max(screenWidth, screenHeight);
     var categoryFrameOpened = false;
     var categoryFrame;
     var category;
@@ -29,6 +32,7 @@ window.onload = function(){
     var stripHeight = 85;
     var stripDelay = 1;         // used for closing very thin gaps between fences that appear in some browsers
     var step = 75;              // bigger value, faster animation
+    var heightLevel1 = 170;
     var outgoingFrame = null;
     var outgoingCategory = null;
     var colorSets = {
@@ -123,10 +127,9 @@ window.onload = function(){
 
     function drawSectionTwo(){
         var diagonalstrips = document.getElementById('diagonal-strips');
-        var canvasLength = Math.max(window.screen.width, window.screen.height);
 
-        diagonalstrips.width = window.screen.width;
-        diagonalstrips.height = window.screen.height;
+        diagonalstrips.width = screenWidth;
+        diagonalstrips.height = screenHeight;
 
         var ctx = diagonalstrips.getContext('2d');
 
@@ -156,11 +159,15 @@ window.onload = function(){
 
     // ANIMATING MAIN COPY AND SCROLL ICON ON SCROLL
 
-    handleScroll(scrollArrow, 170, 'hide');
-    handleScroll(mainCopy, document.documentElement.clientHeight * 0.95 - 200, 'nav');
+    window.addEventListener('scroll', function(){
+        var heightLevel2 = document.documentElement.clientHeight * 0.95 - 200;
+        handleScroll(scrollArrow, heightLevel1, 'hide');
+        handleScroll(mainCopy, heightLevel2, 'nav');
+    });
+
+
 
     function handleScroll(el, shrinkOn, classToToggle){
-        window.addEventListener('scroll', function(){
             var distanceY = window.pageYOffset || document.documentElement.scrollTop;
             if(distanceY > shrinkOn){
                 if(!(el.classList.contains(classToToggle))){
@@ -172,7 +179,6 @@ window.onload = function(){
                     el.classList.remove(classToToggle);
                 }
             }
-        });
     }
 
     window.addEventListener('scroll', function(){
@@ -190,7 +196,7 @@ window.onload = function(){
     }
 
     function scrollToSection3(){
-        document.body.scrollTop = window.screen.height;
+        document.body.scrollTop = screenHeight;
     }
 
     // HANDLING THE CARD CLICK (FENCES IN)
@@ -249,7 +255,7 @@ window.onload = function(){
         ctx1 = leftFences.getContext('2d');
         ctx2 = rightFences.getContext('2d');
         mask1X = 0;            // x position of the rectangle that masks the left fences
-        mask2W = window.screen.width;  // width of the rectangle that masks the right fences
+        mask2W = screenWidth;  // width of the rectangle that masks the right fences
 
         subcategoryCtx = subcategoryBackground.getContext('2d');
 
@@ -265,11 +271,10 @@ window.onload = function(){
     }
 
     function drawFences(){
-        var canvasLength = Math.max(window.screen.width, window.screen.height);
-        leftFences.width = window.screen.width;
-        leftFences.height = window.screen.height;
-        rightFences.width = window.screen.width;
-        rightFences.height = window.screen.height;
+        leftFences.width = screenWidth;
+        leftFences.height = screenHeight;
+        rightFences.width = screenWidth;
+        rightFences.height = screenHeight;
 
         ctx1.fillStyle = currentColorSet[0];
         ctx2.fillStyle = currentColorSet[1];
@@ -305,8 +310,8 @@ window.onload = function(){
 
         ctx1.restore();
         ctx2.restore();
-        ctx1.clearRect(mask1X, 0, window.screen.width - mask1X, window.screen.height);
-        ctx2.clearRect(0, 0 , mask2W, window.screen.height);
+        ctx1.clearRect(mask1X, 0, screenWidth - mask1X, screenHeight);
+        ctx2.clearRect(0, 0 , mask2W, screenHeight);
     }
 
     function moveInFences(){
@@ -315,7 +320,7 @@ window.onload = function(){
         mask1X += step;
         mask2W -= step;
         // repeat till masks leave the screen
-        if (mask1X < window.screen.width + step && mask2W > -step){
+        if (mask1X < screenWidth + step && mask2W > -step){
             window.requestAnimationFrame(moveInFences);
         }
         else {
@@ -330,14 +335,14 @@ window.onload = function(){
         mask1X -= step;
         mask2W += step;
         // repeat till masks cover all the screen
-        if (mask1X > -step && mask2W < window.screen.width + step){
+        if (mask1X > -step && mask2W < screenWidth + step){
             window.requestAnimationFrame(moveOutFences);
         }
         else {
             removeFrame(categoryFrame, category);
             // reset the masks for the next animation
             mask1X = 0;
-            mask2W = window.screen.width;
+            mask2W = screenWidth;
         }
 
     }
