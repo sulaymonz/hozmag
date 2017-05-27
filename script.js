@@ -14,18 +14,21 @@ window.onload = function(){
     var screenWidth = window.screen.width;
     var screenHeight = window.screen.height;
     var canvasLength = Math.max(screenWidth, screenHeight);
-    var categoryFrameOpened = false;
+    var categoryFrameIsOpen = false;
+    var subcategoryFrameIsOpen = false;
     var categoryFrame;
     var category;
+    var categoryIdx;
+    var prevCategoryIdx;
     var leftFences;
     var rightFences;
     var ctx1;
     var ctx2;
     var mask1X;
     var mask2W;
+    var openedSubcardIdx;
     var subcategoryBackground;
     var subcategoryCtx;
-    // var categoryFrameOpened = false;
     var currentCategoryIdx;
     var ctx;
     var stripStep = 225;
@@ -47,7 +50,6 @@ window.onload = function(){
     var subcardCanvas;
     var subcardHover;
     var backgroundRadius = 99;
-    var goalRadius = 990;
     var subcardPositionX = {
             subcard0: 400,
             subcard1: 630,
@@ -82,33 +84,37 @@ window.onload = function(){
     });
 
     function handleHashchange(hash){
-        var keyword = hash.split('/')[0];
+        var keyword = hash.split('/')[0].split('-')[0];
 
         var map = {
             '': function(){
-                if(categoryFrameOpened) closeCategoryFrame();
+                if(categoryFrameIsOpen) closeCategoryFrame();
                 else releaseNavbar();
                 resetOutgoings();
-                // categoryFrameOpened = false;
             },
             '#category': function(){
-                var index = hash.split('#category/')[1].trim();
-                if (index <= 6){
+                prevCategoryIdx = categoryIdx;
+                categoryIdx = hash.split('#category-')[1].trim().split('/')[0];
+                if (categoryIdx >= 0 && categoryIdx <= 6 && categoryIdx != prevCategoryIdx){
                     fixNavbarToTop();
                     disableBodyScroll();
-                    if(categoryFrameOpened) {
+                    if(categoryFrameIsOpen) {
                         outgoingFrame = categoryFrame;
                         outgoingCategory = category;
                     }
-                    newCategoryFrame(index);
+                    newCategoryFrame(categoryIdx);
+                }
+                else {
+                    handleSubcategory();
                 }
             },
             '#cards': function(){
-                if(categoryFrameOpened) closeCategoryFrame();
+                mainCopy.classList.add('nav');
+                if(categoryFrameIsOpen) closeCategoryFrame();
                 else enableBodyScroll();
                 scrollToSection3();
+                handleSubcategory();
                 resetOutgoings();
-                // categoryFrameOpened = false;
             }
         };
         if(map[keyword]){
@@ -197,6 +203,9 @@ window.onload = function(){
 
     function scrollToSection3(){
         document.body.scrollTop = screenHeight;
+        if(!mainCopy.classList.contains('nav')){
+            mainCopy.classList.add('nav');
+        }
     }
 
     // HANDLING THE CARD CLICK (FENCES IN)
@@ -204,7 +213,7 @@ window.onload = function(){
     for (var i=0; i<cards.length; i++){
         (function(idx){
             cards[idx].addEventListener('click', function (){
-                window.location.hash = 'category/' + idx;
+                window.location.hash = 'category-' + idx;
             });
         })(i);
     }
@@ -215,8 +224,14 @@ window.onload = function(){
 
     document.addEventListener('buildFrameEvent', function () {
         if(outgoingFrame && outgoingCategory) {
+            // clear outgoing background first, show subcards, then remove frame
+            outgoingCategory.querySelector('.subcategory-background').getContext('2d').clearRect(0, 0, 1030, 550);
+            removeSubcategoryFrame(outgoingCategory, false);
+            showSubcards();
             removeFrame(outgoingFrame, outgoingCategory);
+            subcategoryFrameIsOpen = false;
         }
+        handleSubcategory();
     });
 
     function fixNavbarToTop(){
@@ -225,7 +240,7 @@ window.onload = function(){
     }
 
     function releaseNavbar(){
-        mainCopy.classList.remove('nav');            // fixing the nav-bar to top for cases when it's not already there
+        mainCopy.classList.remove('nav');
         tabs.className = '';
     }
 
@@ -266,7 +281,7 @@ window.onload = function(){
         // category.style.borderColor = currentColorSet[1];
         category.querySelector('.title').style.color = currentColorSet[1];
 
-        categoryFrameOpened = true;
+        categoryFrameIsOpen = true;
         window.requestAnimationFrame(moveInFences);
     }
 
@@ -324,7 +339,7 @@ window.onload = function(){
             window.requestAnimationFrame(moveInFences);
         }
         else {
-            categoryFrameOpened = true;
+            categoryFrameIsOpen = true;
             document.dispatchEvent(buildFrameEvent);
         }
     }
@@ -355,7 +370,10 @@ window.onload = function(){
 
     function closeCategoryFrame(){
         category.classList.add('hidden');
-        categoryFrameOpened = false;
+        categoryFrameIsOpen = false;
+        prevCategoryIdx = null;
+        categoryIdx = null;
+
 
         tabs.classList.remove('show');
         setTimeout(function(){
@@ -374,7 +392,7 @@ window.onload = function(){
         (function(idx){
             tab[idx].addEventListener('click', function(){
                 if(idx != currentCategoryIdx){
-                    window.location.hash = 'category/' + idx;
+                    window.location.hash = 'category-' + idx;
                 }
             });
         })(i);
@@ -383,7 +401,7 @@ window.onload = function(){
     // HANDLING LOGO CLICK
 
     logo.addEventListener('click', function(){
-        if(categoryFrameOpened) {
+        if(categoryFrameIsOpen) {
             window.location.hash = 'cards';
         }
     });
@@ -482,31 +500,45 @@ window.onload = function(){
     for(var i=0; i<subcards.length; i++){
         (function(idx){
             subcards[idx].addEventListener('click', function(){
-                handleSubcardClick(idx);
+                window.location.hash = 'category-' + categoryIdx + '/' + 'subcategory-' + idx;
             });
         })(i);
     }
+    
+    function handleSubcategory(){
+        if(!hash) var hash = window.location.hash;
+        if(hash.match(/subcategory/)){
+            var subcategoryIdx = hash.split('subcategory-')[1].trim();
+            openSubcategory(subcategoryIdx);
+        }
+        else if(subcategoryFrameIsOpen) {
+            removeSubcategoryFrame(category, true);
+            window.requestAnimationFrame(function () {
+                collapseBackground(openedSubcardIdx, 90);
+            });
+        }
+    }
 
-    function handleSubcardClick(idx) {
+    function openSubcategory(idx) {
         for(var i=0; i<subcards.length; i++){
             subcards[i].classList.add('none');
         }
+        openedSubcardIdx = idx;
         subcategoryCtx.fillStyle = '#f7fff7';
+        backgroundRadius = 99;
+        subcategoryFrameIsOpen = true;
         window.requestAnimationFrame(function(){
-            expandBackground(idx);
+            expandBackground(idx, 930);
         });
     }
 
-    function expandBackground(idx){
-        subcategoryCtx.clearRect(0, 0, 1030, 550);
-        subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, backgroundRadius, 0, Math.PI * 2, false);
-        subcategoryCtx.fill();
-
-        backgroundRadius += step/3;
+    function expandBackground(idx, goalRadius){
+        drawCircle(idx, backgroundRadius);
+        backgroundRadius += step/2;
 
         if(backgroundRadius < goalRadius) {
             window.requestAnimationFrame(function(){
-                expandBackground(idx);
+                expandBackground(idx, goalRadius);
             });
         }
         else {
@@ -514,7 +546,36 @@ window.onload = function(){
         }
     }
 
+    function collapseBackground(idx, goalRadius){
+        drawCircle(idx, backgroundRadius);
+        backgroundRadius -= step/2;
+
+        if(backgroundRadius >= goalRadius) {
+            window.requestAnimationFrame(function(){
+                collapseBackground(idx, goalRadius);
+            });
+        }
+        else {
+            showSubcards();
+        }
+    }
+
+    function showSubcards(){
+        for(var i=0; i<subcards.length; i++){
+            subcards[i].classList.remove('none');
+        }
+    }
+
+    function drawCircle(idx, radius){
+        subcategoryCtx.clearRect(0, 0, 1030, 550);
+        subcategoryCtx.beginPath();
+        subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, radius, 0, Math.PI * 2, false);
+        subcategoryCtx.fill();
+    }
+
+    var subcategoryWrapper;
     var subcategoryFrame;
+    var subcategoryHeader;
     var goods = {
         category0: {
             subcategory0: {
@@ -675,12 +736,33 @@ window.onload = function(){
     };
 
     function createSubcategoryFrame(idx){
-        subcategoryFrame = category.querySelector('.subcategory-frame');
-        subcategoryFrame.classList.add('block');
+        subcategoryWrapper = category.querySelector('.subcategory-wrapper');
+        subcategoryFrame = subcategoryWrapper.querySelector('.subcategory-frame');
+        subcategoryHeader = subcategoryWrapper.querySelector('.subcategory-header');
+        subcategoryHeader.innerHTML = subcards[idx].querySelector('.header').innerHTML.replace('\<br\>', '');
+        subcategoryWrapper.classList.add('block');
         setTimeout(function(){
-            subcategoryFrame.classList.add('show');
+            subcategoryWrapper.classList.add('show');
         }, 10);
         generateGoodsList(idx);
+    }
+
+    function removeSubcategoryFrame(category, animate){
+        var wrapper = category.querySelector('.subcategory-wrapper');
+        var frame = wrapper.querySelector('.subcategory-frame');
+        wrapper.classList.remove('show');
+        if(animate){
+            setTimeout(function(){
+                wrapper.classList.add('block');
+                frame.innerHTML = '';
+                subcategoryFrameIsOpen = false;
+            }, 210);
+        }
+        else {
+            wrapper.classList.add('block');
+            frame.innerHTML = '';
+            subcategoryFrameIsOpen = false;
+        }
     }
 
     function generateGoodsList(idx){
@@ -709,6 +791,16 @@ window.onload = function(){
             subcategoryFrame.appendChild(good);
         }
     }
+
+    // HANDLING SUBCATEGORY CLOSE BUTTON CLICK
+
+    var closeSubcategory = document.querySelectorAll('.close-subcategory');
+
+    closeSubcategory.forEach(function(close){
+        close.addEventListener('click', function(){
+            window.location.hash = window.location.hash.split('/subcategory-')[0];
+        });
+    });
 
 };
 
