@@ -8,35 +8,36 @@ window.onload = function(){
     var tabs = document.getElementById('tabs');
     var cards = document.querySelectorAll('.card');
     var categoriesStack = document.getElementById('categories');
+    var scrollArrow = document.getElementById('scroller');
+    var tab = document.querySelectorAll('.tab');
+    var logo = document.getElementById('main-title');
     var screenWidth = window.screen.width;
     var screenHeight = window.screen.height;
     var canvasLength = Math.max(screenWidth, screenHeight);
-    var categoryFrameOpened = false;
+    var categoryFrameIsOpen = false;
+    var subcategoryFrameIsOpen = false;
     var categoryFrame;
     var category;
+    var categoryIdx;
+    var prevCategoryIdx;
     var leftFences;
     var rightFences;
     var ctx1;
     var ctx2;
     var mask1X;
     var mask2W;
+    var openedSubcardIdx;
     var subcategoryBackground;
     var subcategoryCtx;
-    var frameIsOpen = false;
     var currentCategoryIdx;
     var ctx;
     var stripStep = 225;
     var stripHeight = 85;
     var stripDelay = 1;         // used for closing very thin gaps between fences that appear in some browsers
     var step = 75;              // bigger value, faster animation
-    var scrollArrow = document.getElementById('scroller');
-    var windowHeight = document.documentElement.clientHeight;
     var heightLevel1 = 170;
-    var heightLevel2 = windowHeight * 0.95 - 200;
-    var tab = document.querySelectorAll('.tab');
     var outgoingFrame = null;
     var outgoingCategory = null;
-    var logo = document.getElementById('main-title');
     var colorSets = {
         set1: ['#ffe66d', '#333333', '#ff6b6b', '#333333'],
         set2: ['#ff6b6b', '#4ecdc4', '#ff6b6b', '#4ecdc4'],
@@ -49,7 +50,6 @@ window.onload = function(){
     var subcardCanvas;
     var subcardHover;
     var backgroundRadius = 99;
-    var goalRadius = 990;
     var subcardPositionX = {
             subcard0: 400,
             subcard1: 630,
@@ -84,32 +84,37 @@ window.onload = function(){
     });
 
     function handleHashchange(hash){
-        console.log(hash);
-        var keyword = hash.split('/')[0];
-        console.log(keyword);
+        var keyword = hash.split('/')[0].split('-')[0];
 
         var map = {
             '': function(){
-                if(frameIsOpen) closeCategoryFrame();
+                if(categoryFrameIsOpen) closeCategoryFrame();
+                else releaseNavbar();
                 resetOutgoings();
-                frameIsOpen = false;
             },
             '#category': function(){
-                var index = hash.split('#category/')[1].trim();
-                if (index <= 6){
-                    fixNavbar();
-                    if(frameIsOpen) {
+                prevCategoryIdx = categoryIdx;
+                categoryIdx = hash.split('#category-')[1].trim().split('/')[0];
+                if (categoryIdx >= 0 && categoryIdx <= 6 && categoryIdx != prevCategoryIdx){
+                    fixNavbarToTop();
+                    disableBodyScroll();
+                    if(categoryFrameIsOpen) {
                         outgoingFrame = categoryFrame;
                         outgoingCategory = category;
                     }
-                    newCategoryFrame(index);
+                    newCategoryFrame(categoryIdx);
+                }
+                else {
+                    handleSubcategory();
                 }
             },
             '#cards': function(){
-                if(frameIsOpen) closeCategoryFrame();
-                document.body.scrollTop = screenHeight;
+                mainCopy.classList.add('nav');
+                if(categoryFrameIsOpen) closeCategoryFrame();
+                else enableBodyScroll();
+                scrollToSection3();
+                handleSubcategory();
                 resetOutgoings();
-                frameIsOpen = false;
             }
         };
         if(map[keyword]){
@@ -160,11 +165,15 @@ window.onload = function(){
 
     // ANIMATING MAIN COPY AND SCROLL ICON ON SCROLL
 
-    handleScroll(scrollArrow, heightLevel1, 'hide');
-    handleScroll(mainCopy, heightLevel2, 'nav');
+    window.addEventListener('scroll', function(){
+        var heightLevel2 = document.documentElement.clientHeight * 0.95 - 200;
+        handleScroll(scrollArrow, heightLevel1, 'hide');
+        handleScroll(mainCopy, heightLevel2, 'nav');
+    });
+
+
 
     function handleScroll(el, shrinkOn, classToToggle){
-        window.addEventListener('scroll', function(){
             var distanceY = window.pageYOffset || document.documentElement.scrollTop;
             if(distanceY > shrinkOn){
                 if(!(el.classList.contains(classToToggle))){
@@ -176,21 +185,35 @@ window.onload = function(){
                     el.classList.remove(classToToggle);
                 }
             }
-        });
     }
 
     window.addEventListener('scroll', function(){
         var distanceY = window.pageYOffset || document.documentElement.scrollTop,
-            top = Math.max(0 ,windowHeight * 0.475 - 100 - distanceY);
+            top = Math.max(0 ,document.documentElement.clientHeight * 0.475 - 100 - distanceY);
         mainCopy.style.top = top + 'px';
     });
+
+    function disableBodyScroll(){
+        document.body.classList.add('noscroll');
+    }
+
+    function enableBodyScroll() {
+        document.body.classList.remove('noscroll');
+    }
+
+    function scrollToSection3(){
+        document.body.scrollTop = screenHeight;
+        if(!mainCopy.classList.contains('nav')){
+            mainCopy.classList.add('nav');
+        }
+    }
 
     // HANDLING THE CARD CLICK (FENCES IN)
 
     for (var i=0; i<cards.length; i++){
         (function(idx){
             cards[idx].addEventListener('click', function (){
-                window.location.hash = 'category/' + idx;
+                window.location.hash = 'category-' + idx;
             });
         })(i);
     }
@@ -201,14 +224,24 @@ window.onload = function(){
 
     document.addEventListener('buildFrameEvent', function () {
         if(outgoingFrame && outgoingCategory) {
+            // clear outgoing background first, show subcards, then remove frame
+            outgoingCategory.querySelector('.subcategory-background').getContext('2d').clearRect(0, 0, 1030, 550);
+            removeSubcategoryFrame(outgoingCategory, false);
+            showSubcards();
             removeFrame(outgoingFrame, outgoingCategory);
+            subcategoryFrameIsOpen = false;
         }
+        handleSubcategory();
     });
 
-    function fixNavbar(){
+    function fixNavbarToTop(){
         mainCopy.classList.add('nav');            // fixing the nav-bar to top for cases when it's not already there
         tabs.className = 'block show';
-        document.body.classList.add('noscroll');  // disable body scroll to prevent nav-bar moving
+    }
+
+    function releaseNavbar(){
+        mainCopy.classList.remove('nav');
+        tabs.className = '';
     }
 
     function newCategoryFrame(categoryIdx){
@@ -248,7 +281,7 @@ window.onload = function(){
         // category.style.borderColor = currentColorSet[1];
         category.querySelector('.title').style.color = currentColorSet[1];
 
-        frameIsOpen = true;
+        categoryFrameIsOpen = true;
         window.requestAnimationFrame(moveInFences);
     }
 
@@ -306,7 +339,7 @@ window.onload = function(){
             window.requestAnimationFrame(moveInFences);
         }
         else {
-            categoryFrameOpened = true;
+            categoryFrameIsOpen = true;
             document.dispatchEvent(buildFrameEvent);
         }
     }
@@ -337,7 +370,10 @@ window.onload = function(){
 
     function closeCategoryFrame(){
         category.classList.add('hidden');
-        categoryFrameOpened = false;
+        categoryFrameIsOpen = false;
+        prevCategoryIdx = null;
+        categoryIdx = null;
+
 
         tabs.classList.remove('show');
         setTimeout(function(){
@@ -356,7 +392,7 @@ window.onload = function(){
         (function(idx){
             tab[idx].addEventListener('click', function(){
                 if(idx != currentCategoryIdx){
-                    window.location.hash = 'category/' + idx;
+                    window.location.hash = 'category-' + idx;
                 }
             });
         })(i);
@@ -365,7 +401,7 @@ window.onload = function(){
     // HANDLING LOGO CLICK
 
     logo.addEventListener('click', function(){
-        if(categoryFrameOpened) {
+        if(categoryFrameIsOpen) {
             window.location.hash = 'cards';
         }
     });
@@ -464,36 +500,307 @@ window.onload = function(){
     for(var i=0; i<subcards.length; i++){
         (function(idx){
             subcards[idx].addEventListener('click', function(){
-                handleSubcardClick(idx);
+                window.location.hash = 'category-' + categoryIdx + '/' + 'subcategory-' + idx;
             });
         })(i);
     }
+    
+    function handleSubcategory(){
+        if(!hash) var hash = window.location.hash;
+        if(hash.match(/subcategory/)){
+            var subcategoryIdx = hash.split('subcategory-')[1].trim();
+            openSubcategory(subcategoryIdx);
+        }
+        else if(subcategoryFrameIsOpen) {
+            removeSubcategoryFrame(category, true);
+            window.requestAnimationFrame(function () {
+                collapseBackground(openedSubcardIdx, 90);
+            });
+        }
+    }
 
-    function handleSubcardClick(idx) {
+    function openSubcategory(idx) {
         for(var i=0; i<subcards.length; i++){
             subcards[i].classList.add('none');
         }
+        openedSubcardIdx = idx;
         subcategoryCtx.fillStyle = '#f7fff7';
+        backgroundRadius = 99;
+        subcategoryFrameIsOpen = true;
         window.requestAnimationFrame(function(){
-            expandBackground(idx);
+            expandBackground(idx, 930);
         });
     }
 
-    function expandBackground(idx){
-        subcategoryCtx.clearRect(0, 0, 1030, 550);
-        subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, backgroundRadius, 0, Math.PI * 2, false);
-        subcategoryCtx.fill();
-
+    function expandBackground(idx, goalRadius){
+        drawCircle(idx, backgroundRadius);
         backgroundRadius += step/2;
-        // step += 5;
 
         if(backgroundRadius < goalRadius) {
             window.requestAnimationFrame(function(){
-                expandBackground(idx);
+                expandBackground(idx, goalRadius);
             });
         }
-        // else subcategoryBackground.classList.add('drawn');
+        else {
+            createSubcategoryFrame(idx);
+        }
     }
+
+    function collapseBackground(idx, goalRadius){
+        drawCircle(idx, backgroundRadius);
+        backgroundRadius -= step/2;
+
+        if(backgroundRadius >= goalRadius) {
+            window.requestAnimationFrame(function(){
+                collapseBackground(idx, goalRadius);
+            });
+        }
+        else {
+            showSubcards();
+        }
+    }
+
+    function showSubcards(){
+        for(var i=0; i<subcards.length; i++){
+            subcards[i].classList.remove('none');
+        }
+    }
+
+    function drawCircle(idx, radius){
+        subcategoryCtx.clearRect(0, 0, 1030, 550);
+        subcategoryCtx.beginPath();
+        subcategoryCtx.arc(subcardPositionX['subcard' + idx], 295, radius, 0, Math.PI * 2, false);
+        subcategoryCtx.fill();
+    }
+
+    var subcategoryWrapper;
+    var subcategoryFrame;
+    var subcategoryHeader;
+    var goods = {
+        category0: {
+            subcategory0: {
+                good0: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good1: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good2: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good3: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good4: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good5: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good6: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good7: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good8: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good9: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good10: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good11: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good12: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good13: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good14: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                }
+            },
+            subcategory1: {
+                good0: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good1: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good2: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good3: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good4: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good5: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good6: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good7: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good8: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good9: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good10: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good11: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good12: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good13: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                },
+                good14: {
+                    name: 'Топливный Генератор 2000i+',
+                    price: '640с',
+                    thumb: 'images/goods/generator-thumb.jpg'
+                }
+            }
+        }
+    };
+
+    function createSubcategoryFrame(idx){
+        subcategoryWrapper = category.querySelector('.subcategory-wrapper');
+        subcategoryFrame = subcategoryWrapper.querySelector('.subcategory-frame');
+        subcategoryHeader = subcategoryWrapper.querySelector('.subcategory-header');
+        subcategoryHeader.innerHTML = subcards[idx].querySelector('.header').innerHTML.replace('\<br\>', '');
+        subcategoryWrapper.classList.add('block');
+        setTimeout(function(){
+            subcategoryWrapper.classList.add('show');
+        }, 10);
+        generateGoodsList(idx);
+    }
+
+    function removeSubcategoryFrame(category, animate){
+        var wrapper = category.querySelector('.subcategory-wrapper');
+        var frame = wrapper.querySelector('.subcategory-frame');
+        wrapper.classList.remove('show');
+        if(animate){
+            setTimeout(function(){
+                wrapper.classList.add('block');
+                frame.innerHTML = '';
+                subcategoryFrameIsOpen = false;
+            }, 210);
+        }
+        else {
+            wrapper.classList.add('block');
+            frame.innerHTML = '';
+            subcategoryFrameIsOpen = false;
+        }
+    }
+
+    function generateGoodsList(idx){
+        for (var i=0; i<Object.keys(goods['category0']['subcategory' + idx]).length; i++){
+            var name = goods['category0']['subcategory' + idx]['good' + i]['name'];
+            var price = goods['category0']['subcategory' + idx]['good' + i]['price'];
+            var thumb = goods['category0']['subcategory' + idx]['good' + i]['thumb'];
+
+            var good = document.createElement('div');
+            var goodName = document.createElement('div');
+            var goodPrice = document.createElement('div');
+            var goodThumb = document.createElement('div');
+
+            good.className = 'good';
+            goodName.className = 'good-name';
+            goodPrice.className = 'good-price';
+            goodThumb.className = 'good-thumb';
+
+            goodName.innerHTML = name;
+            goodPrice.innerHTML = price;
+            goodThumb.style.backgroundImage = "url(\'" + thumb + "\')";
+
+            good.appendChild(goodThumb);
+            good.appendChild(goodName);
+            good.appendChild(goodPrice);
+            subcategoryFrame.appendChild(good);
+        }
+    }
+
+    // HANDLING SUBCATEGORY CLOSE BUTTON CLICK
+
+    var closeSubcategory = document.querySelectorAll('.close-subcategory');
+
+    closeSubcategory.forEach(function(close){
+        close.addEventListener('click', function(){
+            window.location.hash = window.location.hash.split('/subcategory-')[0];
+        });
+    });
 
 };
 
