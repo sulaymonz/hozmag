@@ -587,10 +587,13 @@ body.noscroll {
     right: 14px;
     width: 13px;
     height: 13px;
-    background: url("images/close-subcategory.png") no-repeat;
+    background: url("images/close-button.png") 50% #ff6b6b no-repeat;
     background-size: contain;
     border-radius: 7px;
     cursor: pointer;
+}
+.close-subcategory:hover {
+    background-color: #f7fff7;
 }
 .good {
     position: relative;
@@ -631,4 +634,259 @@ body.noscroll {
     background-color: #292f36;
     color: #ffe66d;
 }
+
+/*Lightbox*/
+#lightbox-overlay {
+    display: none;
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,.8);
+    z-index: 5;
+    transition: all .5s;
+}
+#lightbox-overlay.block {
+    display: block;
+}
+#lightbox-overlay.show {
+    opacity: 1;
+}
+#lightbox {
+    position: absolute;
+    width: 900px;
+    height: 500px;
+    top: calc(50% - 250px);
+    left: calc(50% - 450px);
+    background-color: #ffe66d;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 2px 5px 0 rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+#logo {
+    position: absolute;
+    top: 17px;
+    left: 220px;
+    font-family: 'FinitionPERSONALUSEONLY';
+    font-size: 30px;
+    color: #ff6b6b;
+    cursor: default;
+}
+#logo span {
+    color: #292f36;
+}
+#lightbox-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 13px;
+    height: 13px;
+    background: url("images/close-button.png") 50% #ffe66d no-repeat;
+    background-size: contain;
+    border-radius: 7px;
+    z-index: 2;
+    transition: all .2s;
+    cursor: pointer;
+}
+#lightbox-close:hover {
+    background-color: #f7fff7;
+}
+#slide-holder {
+    position: absolute;
+    top: 70px;
+    width: 600px;
+    height: 400px;
+    left: 10px;
+    overflow: hidden;
+}
+.slide {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("images/goods/generator.jpg") 50% no-repeat;
+}
+.slide.active,
+.slide.incoming,
+.slide.outgoing {
+    display: block;
+}
+.slide {
+    background-size: contain;
+}
+
+.left .slide.incoming {
+    -webkit-animation: inLeft 0.5s forwards;
+    -moz-animation: inLeft 0.5s forwards;
+    -o-animation: inLeft 0.5s forwards;
+    animation: inLeft 0.5s forwards;
+}
+.left .slide.outgoing {
+    -webkit-animation: outLeft 0.5s forwards;
+    -moz-animation: outLeft 0.5s forwards;
+    -o-animation: outLeft 0.5s forwards;
+    animation: outLeft 0.5s forwards;
+}
+.right .slide.incoming {
+    -webkit-animation: inRight 0.5s forwards;
+    -moz-animation: inRight 0.5s forwards;
+    -o-animation: inRight 0.5s forwards;
+    animation: inRight 0.5s forwards;
+}
+.right .slide.outgoing {
+    -webkit-animation: outRight 0.5s forwards;
+    -moz-animation: outRight 0.5s forwards;
+    -o-animation: outRight 0.5s forwards;
+    animation: outRight 0.5s forwards;
+}
+
+#thumb-holder {
+    position: absolute;
+    left: 293px;
+    bottom: 20px;
+    width: 30px;
+    height: 15px;
+    z-index: 2;
+}
+.thumb {
+    position: absolute;
+    top: 0;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #f7fff7;
+    border-radius: 37px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all .2s;
+}
+.thumb.active {
+    background-color: #f7fff7;
+}
+.thumb_0 {
+    left: 0;
+}
+.thumb_1 {
+    left: 17px;
+}
+.arrow {
+    position: absolute;
+    top: calc(45% - 15px);
+    width: 20px;
+    height: 35px;
+    cursor: pointer;
+    z-index: 2;
+}
+.left-arrow {
+    left: 0;
+    background: url("images/left-arrow.png") no-repeat;
+}
+.right-arrow {
+    right: 0;
+    background: url("images/right-arrow.png") no-repeat;
+}
+.arrow {
+    background-size: 100%;
+}
+.arrow:hover {
+    background-position-y: -35px;
+}
+#good-info {
+    position: absolute;
+    top: 0;
+    left: 620px;
+    width: 280px;
+    height: 100%;
+    padding-top: 70px;
+    padding-left: 10px;
+    background: #ff6b6b;
+    box-sizing: border-box;
+    color: #ffe66d;
+    font-size: 14px;
+    font-family: 'SnowstormLight';
+}
+
+.g {
+    width: 100%;
+    margin-bottom: 10px;
+}
+.g .label {
+    font-weight: bold;
+}
+.g .value {
+    color: #292f36;
+}
+
+/*Animations*/
+@-webkit-keyframes inLeft {
+    0% {-webkit-transform: translateX(100%);}
+    100% {-webkit-transform: translateX(0);}
+}
+@-moz-keyframes inLeft {
+    0% {-moz-transform: translateX(100%);}
+    100% {-moz-transform: translateX(0);}
+}
+@-o-keyframes inLeft {
+    0% {-o-transform: translateX(100%);}
+    100% {-o-transform: translateX(0);}
+}
+@keyframes inLeft {
+    0% {transform: translateX(100%);}
+    100% {transform: translateX(0);}
+}
+
+@-webkit-keyframes outLeft {
+    0% {-webkit-transform: translateX(0);}
+    100% {-webkit-transform: translateX(-100%);}
+}
+@-moz-keyframes outLeft {
+    0% {-moz-transform: translateX(0);}
+    100% {-moz-transform: translateX(-100%);}
+}
+@-o-keyframes outLeft {
+    0% {-o-transform: translateX(0);}
+    100% {-o-transform: translateX(-100%);}
+}
+@keyframes outLeft {
+    0% {transform: translateX(0);}
+    100% {transform: translateX(-100%);}
+}
+
+@-webkit-keyframes inRight {
+    0% {-webkit-transform: translateX(-00px);}
+    100% {-webkit-transform: translateX(0);}
+}
+@-moz-keyframes inRight {
+    0% {-moz-transform: translateX(-100%);}
+    100% {-moz-transform: translateX(0);}
+}
+@-o-keyframes inRight {
+    0% {-o-transform: translateX(-100%);}
+    100% {-o-transform: translateX(0);}
+}
+@keyframes inRight {
+    0% {transform: translateX(-100%);}
+    100% {transform: translateX(0);}
+}
+
+@-webkit-keyframes outRight {
+    0% {-webkit-transform: translateX(0);}
+    100% {-webkit-transform: translateX(100%);}
+}
+@-moz-keyframes outRight {
+    0% {-moz-transform: translateX(0);}
+    100% {-moz-transform: translateX(100%);}
+}
+@-o-keyframes outRight {
+    0% {-o-transform: translateX(0);}
+    100% {-o-transform: translateX(100%);}
+}
+@keyframes outRight {
+    0% {transform: translateX(0);}
+    100% {transform: translateX(100%);}
+}
+
 
