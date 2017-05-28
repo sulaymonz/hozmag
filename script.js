@@ -19,6 +19,7 @@ window.onload = function(){
     var categoryFrame;
     var category;
     var categoryIdx;
+    var currentCategoryIdx;
     var prevCategoryIdx;
     var leftFences;
     var rightFences;
@@ -26,10 +27,11 @@ window.onload = function(){
     var ctx2;
     var mask1X;
     var mask2W;
-    var openedSubcardIdx;
     var subcategoryBackground;
     var subcategoryCtx;
-    var currentCategoryIdx;
+    var currentSubcategoryIdx;
+    var prevSubcategoryIdx;
+    var lightboxIsOpen = false;
     var ctx;
     var stripStep = 225;
     var stripHeight = 85;
@@ -81,6 +83,7 @@ window.onload = function(){
 
     window.addEventListener('hashchange', function(){
         handleHashchange(decodeURI(window.location.hash));
+        handleLightbox();
     });
 
     function handleHashchange(hash){
@@ -229,7 +232,6 @@ window.onload = function(){
             removeSubcategoryFrame(outgoingCategory, false);
             showSubcards();
             removeFrame(outgoingFrame, outgoingCategory);
-            subcategoryFrameIsOpen = false;
         }
         handleSubcategory();
     });
@@ -508,13 +510,18 @@ window.onload = function(){
     function handleSubcategory(){
         if(!hash) var hash = window.location.hash;
         if(hash.match(/subcategory/)){
-            var subcategoryIdx = hash.split('subcategory-')[1].trim();
-            openSubcategory(subcategoryIdx);
+            if(!hash.match(/good-/)) {
+                console.log(currentSubcategoryIdx, prevSubcategoryIdx);
+                if(!subcategoryFrameIsOpen || prevSubcategoryIdx){
+                    var subcategoryIdx = hash.split('subcategory-')[1].trim();
+                    openSubcategory(subcategoryIdx);
+                }
+            }
         }
         else if(subcategoryFrameIsOpen) {
             removeSubcategoryFrame(category, true);
             window.requestAnimationFrame(function () {
-                collapseBackground(openedSubcardIdx, 90);
+                collapseBackground(currentSubcategoryIdx, 90);
             });
         }
     }
@@ -523,7 +530,8 @@ window.onload = function(){
         for(var i=0; i<subcards.length; i++){
             subcards[i].classList.add('none');
         }
-        openedSubcardIdx = idx;
+        prevSubcategoryIdx = currentSubcategoryIdx;
+        currentSubcategoryIdx = idx;
         subcategoryCtx.fillStyle = '#f7fff7';
         backgroundRadius = 99;
         subcategoryFrameIsOpen = true;
@@ -557,6 +565,9 @@ window.onload = function(){
         }
         else {
             showSubcards();
+            currentSubcategoryIdx = null;
+            prevSubcategoryIdx = null;
+            subcategoryFrameIsOpen = false;
         }
     }
 
@@ -751,6 +762,7 @@ window.onload = function(){
         var wrapper = category.querySelector('.subcategory-wrapper');
         var frame = wrapper.querySelector('.subcategory-frame');
         wrapper.classList.remove('show');
+
         if(animate){
             setTimeout(function(){
                 wrapper.classList.add('block');
@@ -767,29 +779,62 @@ window.onload = function(){
 
     function generateGoodsList(idx){
         for (var i=0; i<Object.keys(goods['category0']['subcategory' + idx]).length; i++){
-            var name = goods['category0']['subcategory' + idx]['good' + i]['name'];
-            var price = goods['category0']['subcategory' + idx]['good' + i]['price'];
-            var thumb = goods['category0']['subcategory' + idx]['good' + i]['thumb'];
+            (function(j){
+                var name = goods['category0']['subcategory' + idx]['good' + j]['name'];
+                var price = goods['category0']['subcategory' + idx]['good' + j]['price'];
+                var thumb = goods['category0']['subcategory' + idx]['good' + j]['thumb'];
 
-            var good = document.createElement('div');
-            var goodName = document.createElement('div');
-            var goodPrice = document.createElement('div');
-            var goodThumb = document.createElement('div');
+                var good = document.createElement('div');
+                var goodName = document.createElement('div');
+                var goodPrice = document.createElement('div');
+                var goodThumb = document.createElement('div');
 
-            good.className = 'good';
-            goodName.className = 'good-name';
-            goodPrice.className = 'good-price';
-            goodThumb.className = 'good-thumb';
+                good.className = 'good';
+                goodName.className = 'good-name';
+                goodPrice.className = 'good-price';
+                goodThumb.className = 'good-thumb';
 
-            goodName.innerHTML = name;
-            goodPrice.innerHTML = price;
-            goodThumb.style.backgroundImage = "url(\'" + thumb + "\')";
+                goodName.innerHTML = name;
+                goodPrice.innerHTML = price;
+                goodThumb.style.backgroundImage = "url(\'" + thumb + "\')";
 
-            good.appendChild(goodThumb);
-            good.appendChild(goodName);
-            good.appendChild(goodPrice);
-            subcategoryFrame.appendChild(good);
+                good.appendChild(goodThumb);
+                good.appendChild(goodName);
+                good.appendChild(goodPrice);
+                subcategoryFrame.appendChild(good);
+
+                good.addEventListener('click', function(){
+                    window.location.hash = window.location.hash + "/good-";
+                });
+            })(i);
         }
+    }
+
+    var lightboxOverlay = document.querySelector('#lightbox-overlay');
+
+    function handleLightbox(){
+        if(window.location.hash.match(/good-/) && !lightboxIsOpen){
+            openLightbox();
+        }
+        else if(!window.location.hash.match(/good-/) && lightboxIsOpen){
+            closeLightbox();
+        }
+    }
+
+    function openLightbox(){
+        lightboxOverlay.classList.add('block');
+        lightboxIsOpen = true;
+        setTimeout(function(){
+            lightboxOverlay.classList.add('show');
+        }, 10);
+    }
+
+    function closeLightbox(){
+        lightboxOverlay.classList.remove('show');
+        setTimeout(function(){
+            lightboxOverlay.classList.remove('block');
+            lightboxIsOpen = false;
+        }, 510);
     }
 
     // HANDLING SUBCATEGORY CLOSE BUTTON CLICK
@@ -801,6 +846,73 @@ window.onload = function(){
             window.location.hash = window.location.hash.split('/subcategory-')[0];
         });
     });
+
+    // HANDLING LIGHTBOX CLOSE BUTTON CLICK
+
+    var lightboxCloseButton = document.querySelector('#lightbox-close');
+
+    lightboxCloseButton.addEventListener('click', function(){
+        window.location.hash = window.location.hash.split('/good-')[0];
+    });
+
+    // LIGHTBOX SLIDER
+    var lightbox = document.querySelector('#lightbox');
+    var slideHolder = lightbox.querySelector('#slide-holder');
+    var slides = lightbox.querySelectorAll('.slide');
+    var thumbs = lightbox.querySelectorAll('.thumb');
+    var arrowLeft = lightbox.querySelector('.left-arrow');
+    var arrowRight = lightbox.querySelector('.right-arrow');
+
+    var current = 0;
+    var moving = false;
+
+    thumbs.forEach(function (thumb, i) {
+        thumb.addEventListener('click', function(){
+            handleThumbClick(i);
+        });
+    });
+
+    arrowLeft.addEventListener('click', handleLeftArrow);
+    arrowRight.addEventListener('click', handleRightArrow);
+
+
+
+    function handleThumbClick(index){
+        if(index == current || moving) return;
+        else if(index < current) updateThumbs(index, 'right');
+        else updateThumbs(index, 'left');
+    }
+
+    function updateThumbs(index, slideDirection){
+        moving = true;
+        thumbs[current].classList.remove('active');
+        thumbs[index].classList.add('active');
+
+        slideHolder.classList.add(slideDirection);
+        slides[current].classList.add('outgoing');
+        slides[current].classList.remove('active');
+        slides[index].classList.add('active', 'incoming');
+
+        setTimeout(function(){
+            slideHolder.classList.remove(slideDirection);
+            slides[current].classList.remove('outgoing');
+            slides[index].classList.remove('incoming');
+            current = index;
+            moving = false;
+        }, 550);
+    }
+
+    function handleLeftArrow(){
+        if(moving) return;
+        var index = current - 1 < 0 ? slides.length - 1 : current - 1;
+        updateThumbs(index, 'right');
+    }
+
+    function handleRightArrow(){
+        if(moving) return;
+        var index = current + 1 > slides.length - 1 ? 0 : current + 1;
+        updateThumbs(index, 'left');
+    }
 
 };
 
